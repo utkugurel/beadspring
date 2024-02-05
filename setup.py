@@ -1,5 +1,6 @@
 from setuptools import setup, find_packages
 
+
 setup(
     name='Bead Spring Analytics',  # Replace with your package's name
     version='1.0.0',  # Package version
@@ -19,3 +20,16 @@ setup(
     ],
     python_requires='>=3.11.6',  # Minimum version requirement of the package
 )
+
+# Welcome message
+
+ascii_image = r"""  ____                    _    _____               _                                         _         _    _            
+ |  _ \                  | |  / ____|             (_)                   /\                  | |       | |  (_)           
+ | |_) |  ___   __ _   __| | | (___   _ __   _ __  _  _ __    __ _     /  \    _ __    __ _ | | _   _ | |_  _   ___  ___ 
+ |  _ <  / _ \ / _` | / _` |  \___ \ | '_ \ | '__|| || '_ \  / _` |   / /\ \  | '_ \  / _` || || | | || __|| | / __|/ __|
+ | |_) ||  __/| (_| || (_| |  ____) || |_) || |   | || | | || (_| |  / ____ \ | | | || (_| || || |_| || |_ | || (__ \__ \
+ |____/  \___| \__,_| \__,_| |_____/ | .__/ |_|   |_||_| |_| \__, | /_/    \_\|_| |_| \__,_||_| \__, | \__||_| \___||___/
+                                     | |                      __/ |                              __/ |                   
+                                     |_|                     |___/                              |___/                    """
+
+print(ascii_image)
