@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='Bead Spring Analytics',  # Replace with your package's name
     version='1.0.0',  # Package version
-    author='Utku Gurel',  # Your name or your organization's name
+    author='Utku Gürel',  # Your name or your organization's name
     author_email='utkugurel@gmail.com',  # Your email or your organization's contact email
     description='Analysis of beadspring polymers',  # A short description of the package
     long_description=open('README.md').read(),  # A long description from README.md
