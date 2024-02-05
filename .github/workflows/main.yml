@@ -1,0 +1,37 @@
+name: Conda Environment and PyTest Workflow
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v2
+
+    - name: Set up Conda
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        activate-environment: bsa
+        environment-file: environment.yml
+        python-version: '3.11.6'
+        auto-activate-base: false
+
+    # Removed the step that explicitly runs 'conda init bash'
+
+    - name: Install Bead Spring Analytics
+      shell: bash -l {0}  # Ensure to use a login shell to activate conda environment
+      run: |
+        pip install .
+
+    - name: Run PyTest
+      shell: bash -l {0}  # Ensure to use a login shell for consistent environment
+      run: |
+        pytest
