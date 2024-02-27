@@ -4,16 +4,11 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - black=24.1.1
-  - conda=23.10.0
   - dask=2023.11.0
-  - dask-core=2023.11.0
   - freud=2.13.2
   - ipython=8.20.0
-  - mamba=1.5.3
   - matplotlib=3.8.2
   - mdanalysis=2.6.1
-  - numba=0.58.1
   - numpy=1.26.3
   - ovito=3.10.1
   - pandas=2.2.0
