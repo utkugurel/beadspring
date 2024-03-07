@@ -4,16 +4,7 @@ import MDAnalysis as mda
 import numpy as np
 import numpy.testing as npt
 from pyprojroot.here import here
-
-
-def setup_universe():
-    """Set up mdanalysis universe before testing"""
-    topology_file = here('tests/data/topo.data')
-    trajectory_file = here('tests/data/traj.dat')
-    u = mda.Universe(topology_file,
-                     trajectory_file,
-                     format='LAMMPSDUMP', dt=0.005)
-    return u
+from tests.testing_utils import setup_universe
 
 
 universe = setup_universe()
@@ -111,4 +102,24 @@ def test_calculate_prolateness():
     expected_prolateness = (n1 * n2 * n3) / (d1 - d2 - d3 - d4)
     rg2 = calculate_prolateness(lmin, lmid, lmax)
     npt.assert_allclose(rg2, expected_prolateness, rtol=1e-5)
+
+
+def test_identify_end_to_end_vector():
+    from beadspring.analysis.polymer_properties import identify_end_to_end_vector
+
+    chain = select_single_polymer_chain(universe)
+    positions = chain.positions
+    expected_end_to_end_vector = positions[-1] - positions[0]
+    expected_end_to_end_vector = expected_end_to_end_vector.reshape(1, 3)
+    end_to_end_vector = identify_end_to_end_vector([chain])
+    npt.assert_allclose(end_to_end_vector, expected_end_to_end_vector, rtol=1e-5)
+
+#TODO: Add test for calculate_end_to_end_correlation
+#def test_calculate_end_to_end_correlation():
+#    from beadspring.analysis.polymer_properties import calculate_end_to_end_correlation
+
+#TODO: Add test for calculate_end_to_end_correlation_optimised
+#def test_calculate_end_to_end_correlation_optimised():
+#    from beadspring.analysis.polymer_properties import calculate_end_to_end_correlation_optimised    
+
 
