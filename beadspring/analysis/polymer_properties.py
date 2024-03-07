@@ -119,3 +119,75 @@ def calculate_prolateness(lmin, lmid, lmax):
     p = (n1 * n2 * n3) / (d1 - d2 - d3 - d4)
 
     return p
+
+def identify_end_to_end_vector(atom_groups_list):
+    '''
+    Parameters
+    ----------
+    atoms_group_list : list
+        List of <AtomGroup> objects. It can be all backbones in a given system,
+        or all chains over which we want to compute the end to end vector
+    Returns
+    -------
+    end_to_end_vector : np.ndarray
+        (N, 3) shaped array containing the end-to-end vector for each polymer chain
+    '''
+    end_to_end_vector = np.array([elem.positions[-1] - elem.positions[0] for elem in atom_groups_list])
+    return end_to_end_vector
+
+def calculate_end_to_end_correlation(end_to_end_vector):
+    '''
+    This function computes the auto correlation of the end to end vector
+
+    Parameters
+    ----------
+    Ree : np.ndarray 
+        end to end distance vector with shape (len(frames), N_chains, 3) 
+
+    Returns
+    -------
+    correlations :  np.ndarray
+
+    '''
+    correlation = np.zeros(len(end_to_end_vector))
+    for i in range(len(end_to_end_vector)):
+        tmp = 0.0
+        for j in range(len(end_to_end_vector[i])):
+            tmp += np.inner(end_to_end_vector[0][j], end_to_end_vector[i][j]) / np.inner(end_to_end_vector[0][j], end_to_end_vector[0][j])
+        correlation[i] = tmp / len(end_to_end_vector[i])
+
+    return correlation
+
+
+def calculate_end_to_end_correlation_optimised(end_to_end_vector):
+    '''
+    Optimized function to compute the auto correlation of the end to end vector using NumPy vectorization.
+
+    Parameters
+    ----------
+    end_to_end_vector : np.ndarray 
+        End to end distance vector with shape (len(frames), N_chains, 3) 
+
+    Returns
+    -------
+    correlations : np.ndarray
+    '''
+    # Pre-compute the lengths and the denominator for each chain
+    num_frames = len(end_to_end_vector)
+    num_chains = len(end_to_end_vector[0])
+    
+    # Compute the denominator for the correlation calculation (normalization factor for each chain)
+    denominator = np.array([np.inner(end_to_end_vector[0][j], end_to_end_vector[0][j]) for j in range(num_chains)])
+    
+    # Initialize the correlation array
+    correlation = np.zeros(num_frames)
+    
+    # Compute correlation using vectorized operations
+    for i in range(num_frames):
+        # Vectorized computation of inner products for the current frame with the first frame
+        inner_products = np.array([np.inner(end_to_end_vector[0][j], end_to_end_vector[i][j]) for j in range(num_chains)])
+        
+        # Compute the correlation for the current frame
+        correlation[i] = np.mean(inner_products / denominator)
+    
+    return correlation
