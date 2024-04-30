@@ -191,3 +191,23 @@ def calculate_end_to_end_correlation_optimised(end_to_end_vector):
         correlation[i] = np.mean(inner_products / denominator)
     
     return correlation
+
+
+def compute_bond_lengths(atom_group):
+    '''
+    Parameters
+    ----------
+    atom_group : <AtomGroup> object
+        AtomGroup object containing the bond information
+    Returns
+    -------
+    bond_length : np.ndarray
+        Array containing the bond lengths for all bonds in the system
+    '''
+    atom1_positions = atom_group.bonds.atom1.positions
+    atom2_positions = atom_group.bonds.atom2.positions
+    bond_vectors = atom2_positions - atom1_positions
+    bond_length = np.linalg.norm(bond_vectors, axis=1)
+
+    return bond_length
+
