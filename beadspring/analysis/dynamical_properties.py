@@ -198,9 +198,8 @@ def find_wave_vectors(k_magnitude, box_length, tolerance=0.2, num_kvecs=1000, me
     return valid_vectors
 
 
-def compute_fskt(positions, box_length, k_max=7.2):
-    k_vectors = find_wave_vectors(magnitude=k_max, box_length=box_length,
-                                  tolerance=0.2, num_kvecs=1000, memory_limit_gb=2)
+def compute_fskt(positions, box_length, k_max=7.2, **kwargs):
+    k_vectors = find_wave_vectors(k_magnitude=k_max, box_length=box_length, **kwargs)
     dr = positions[1:] - positions[0]
     dr_k = np.dot(dr, k_vectors.T)
     fskt = np.mean(np.cos(dr_k), axis=(1,2))
