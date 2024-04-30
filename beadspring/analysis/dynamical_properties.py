@@ -121,3 +121,87 @@ def compute_van_hove_correlation(positions, time_log, bins=100, rmax=8.0):
     g_r = g_r / (n_particles * volume)
 
     return r, g_r
+
+
+def find_wave_vectors(k_magnitude, box_length, tolerance=0.2, num_kvecs=1000, memory_limit_gb=8):
+
+    """
+    Find all three-dimensional wave vectors with a given magnitude within a specified tolerance using vectorized operations.
+    This version also limits the number of vectors to optimize memory usage based on the provided `num_kvecs`.
+    
+    Args:
+    k_magnitude (float): The target magnitude of the wave vectors.
+    box_length (float): The length of the cubic simulation box.
+    tolerance (float): The tolerance within which the magnitude of the vectors must fall.
+    memory_limit_gb (int): The memory limit in gigabytes for the operation.
+    num_kvecs (int): The maximum number of wave vectors to return.
+
+    Returns:
+    np.ndarray: An array of tuples representing the valid wave vectors (kx, ky, kz).
+    
+    Notes:
+    Currently, I try to convert everything to float32 to save memory. We can implement the following:
+    - More dynamic approach to setting the component_range, potentially based num_kvecs and memory constraints.
+    - Early stopping in vector generation once the num_kvecs is reached, to avoid unnecessary calculations.
+    - Check and balance around memory usage estimates before array operations start. We partially have it at the minute.
+    - We can of course parallelise this operation if needed, but too much effort for a single function.
+    
+    """
+    # Define the range of the magnitude
+    k_magnitude = np.float32(k_magnitude)
+    box_length = np.float32(box_length)
+    tolerance = np.float32(tolerance)
+    
+    lower_bound = k_magnitude - tolerance
+    upper_bound = k_magnitude + tolerance
+    kmin = np.float32(2 * np.pi / box_length)
+
+    # Calculate the maximum possible value for any component based on upper_bound
+    max_component_value = int(upper_bound / np.sqrt(3) / kmin) * kmin
+    
+    # Create a range of possible component values as integers of kmin
+    component_range = np.arange(-max_component_value, max_component_value + kmin, kmin, dtype=np.float32)
+    
+    # Estimate the memory usage of the meshgrid
+    num_elements = len(component_range)**3
+    bytes_per_element = 4  # float32 uses 4 bytes
+    total_memory_usage = (num_elements * bytes_per_element) / (1024**3)  # Convert to GB
+    
+    # Check if the estimated memory usage exceeds the limit
+    if total_memory_usage > memory_limit_gb:
+        raise MemoryError(f"Estimated memory usage of {total_memory_usage:.2f} GB exceeds limit of {memory_limit_gb} GB.")
+    
+    # Generate a grid of kx, ky, kz values
+    kx, ky, kz = np.meshgrid(component_range, component_range, component_range, indexing='ij')
+    
+    # Calculate magnitudes
+    magnitudes = np.sqrt(kx**2 + ky**2 + kz**2)
+    
+    # Boolean indexing to filter vectors within the bounds
+    valid_indices = (magnitudes >= lower_bound) & (magnitudes <= upper_bound)
+    
+    # Use valid indices to filter vectors and their magnitudes
+    valid_kx = kx[valid_indices]
+    valid_ky = ky[valid_indices]
+    valid_kz = kz[valid_indices]
+    valid_magnitudes = magnitudes[valid_indices]
+    
+    # Calculate the closeness to the target magnitude
+    magnitude_diff = np.abs(valid_magnitudes - k_magnitude)
+    
+    # Get indices of the smallest differences, limited to num_kvecs
+    sorted_indices = np.argsort(magnitude_diff)[:num_kvecs]
+    
+    # Extract the valid vectors based on the sorted indices
+    valid_vectors = np.array(list(zip(valid_kx[sorted_indices], valid_ky[sorted_indices], valid_kz[sorted_indices])))
+    
+    return valid_vectors
+
+
+def compute_fskt(positions, box_length, k_max=7.2):
+    k_vectors = find_wave_vectors(magnitude=k_max, box_length=box_length,
+                                  tolerance=0.2, num_kvecs=1000, memory_limit_gb=2)
+    dr = positions[1:] - positions[0]
+    dr_k = np.dot(dr, k_vectors.T)
+    fskt = np.mean(np.cos(dr_k), axis=(1,2))
+    return fskt
