@@ -3,25 +3,39 @@
 
 beadspring created by utkugurel
 
-## Install it from PyPI
+## Install locally
+
+Clone to repository
+```bash
+git clone git@github.com:utkugurel/beadspring.git
+```
+Install the dependencies in a conda environment and activate bsa
 
 ```bash
-pip install beadspring
+conda env create -f environment.yml
+conda activate bsa
+```
+Install beadspring into bsa environment
+
+```bash
+pip install -e .
+```
+
+Check the installation
+```bash
+$ python -m beadspring
+#or
+$ beadspring
+```
+Run the tests with pytest
+
+```bash
+pytest .
 ```
 
 ## Usage
 
 ```py
-from beadspring import BaseClass
-from beadspring import base_function
-
-BaseClass().base_method()
-base_function()
-```
-
-```bash
-$ python -m beadspring
-#or
-$ beadspring
+import beadspring as bsa
 ```
 
