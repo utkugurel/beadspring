@@ -154,7 +154,7 @@ def find_wave_vectors(k_magnitude, box_length, tolerance=0.2, num_kvecs=1000, me
     
     lower_bound = k_magnitude - tolerance
     upper_bound = k_magnitude + tolerance
-    kmin = np.float32(4 * np.pi / box_length)
+    kmin = np.float32(2 * np.pi / box_length)
 
     # Calculate the maximum possible value for any component based on upper_bound
     max_component_value = int(upper_bound / np.sqrt(3) / kmin) * kmin
