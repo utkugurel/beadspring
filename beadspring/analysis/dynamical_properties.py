@@ -123,7 +123,7 @@ def compute_van_hove_correlation(positions, time_log, bins=100, rmax=8.0):
     return r, g_r
 
 
-def find_wave_vectors(k_magnitude, box_length, tolerance=0.2, num_kvecs=1000, memory_limit_gb=8):
+def find_wave_vectors(k_magnitude, box_length, tolerance=0.2, num_kvecs=1000, memory_limit_gb=8, save_vectors=False):
 
     """
     Find all three-dimensional wave vectors with a given magnitude within a specified tolerance using vectorized operations.
@@ -154,7 +154,7 @@ def find_wave_vectors(k_magnitude, box_length, tolerance=0.2, num_kvecs=1000, me
     
     lower_bound = k_magnitude - tolerance
     upper_bound = k_magnitude + tolerance
-    kmin = np.float32(2 * np.pi / box_length)
+    kmin = np.float32(4 * np.pi / box_length)
 
     # Calculate the maximum possible value for any component based on upper_bound
     max_component_value = int(upper_bound / np.sqrt(3) / kmin) * kmin
@@ -195,11 +195,13 @@ def find_wave_vectors(k_magnitude, box_length, tolerance=0.2, num_kvecs=1000, me
     # Extract the valid vectors based on the sorted indices
     valid_vectors = np.array(list(zip(valid_kx[sorted_indices], valid_ky[sorted_indices], valid_kz[sorted_indices])))
     
+    if save_vectors:
+        np.save("k_vectors.npy", valid_vectors)
     return valid_vectors
 
 
-def compute_fskt(positions, box_length, k_max=7.2, **kwargs):
-    k_vectors = find_wave_vectors(k_magnitude=k_max, box_length=box_length, **kwargs)
+def compute_fskt(positions, k_vectors):
+    #k_vectors = find_wave_vectors(k_magnitude=k_max, box_length=box_length, **kwargs)
     dr = positions[1:] - positions[0]
     dr_k = np.dot(dr, k_vectors.T)
     fskt = np.mean(np.cos(dr_k), axis=(1,2))
