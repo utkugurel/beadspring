@@ -123,85 +123,47 @@ def compute_van_hove_correlation(positions, time_log, bins=100, rmax=8.0):
     return r, g_r
 
 
-def find_wave_vectors(k_magnitude, box_length, tolerance=0.2, num_kvecs=1000, memory_limit_gb=8, save_vectors=False):
+def get_k_vectors(ktarget, box_length, save_vectors=False, memory_limit_gb=8.0):
+    
+    #!TODO: Update the below values accordingly to support non-cubic boxes
+    k_step_x = 2 * np.pi / box_length
+    k_step_y = 2 * np.pi / box_length
+    k_step_z = 2 * np.pi / box_length
+    k_discrete = ktarget / min(k_step_x, k_step_y, k_step_z)
+    k_max = int(np.ceil(k_discrete))
+    
+    # Estimate memory usage
+    num_elements = (k_max ** 3)  # Total elements in one array
+    bytes_per_element = 4  # Assuming 64-bit integers
+    total_bytes = num_elements * bytes_per_element * 3  # For kx, ky, kz
+    total_gigabytes = total_bytes / (1024**3)
 
-    """
-    Find all three-dimensional wave vectors with a given magnitude within a specified tolerance using vectorized operations.
-    This version also limits the number of vectors to optimize memory usage based on the provided `num_kvecs`.
-    
-    Args:
-    k_magnitude (float): The target magnitude of the wave vectors.
-    box_length (float): The length of the cubic simulation box.
-    tolerance (float): The tolerance within which the magnitude of the vectors must fall.
-    memory_limit_gb (int): The memory limit in gigabytes for the operation.
-    num_kvecs (int): The maximum number of wave vectors to return.
+    if total_gigabytes >= memory_limit_gb:
+        print(f"Estimated memory required: {total_gigabytes:.2f} GB exceeds {memory_limit_gb}GB, aborting...")
+        return
 
-    Returns:
-    np.ndarray: An array of tuples representing the valid wave vectors (kx, ky, kz).
-    
-    Notes:
-    Currently, I try to convert everything to float32 to save memory. We can implement the following:
-    - More dynamic approach to setting the component_range, potentially based num_kvecs and memory constraints.
-    - Early stopping in vector generation once the num_kvecs is reached, to avoid unnecessary calculations.
-    - Check and balance around memory usage estimates before array operations start. We partially have it at the minute.
-    - We can of course parallelise this operation if needed, but too much effort for a single function.
-    
-    """
-    # Define the range of the magnitude
-    k_magnitude = np.float32(k_magnitude)
-    box_length = np.float32(box_length)
-    tolerance = np.float32(tolerance)
-    
-    lower_bound = k_magnitude - tolerance
-    upper_bound = k_magnitude + tolerance
-    kmin = np.float32(2 * np.pi / box_length)
+    kx, ky, kz = np.meshgrid(np.arange(k_max), np.arange(k_max), np.arange(k_max), indexing='ij')
+    magnitudes_squared = kx**2 + ky**2 + kz**2
+    close_to_k_discrete = np.abs(np.sqrt(magnitudes_squared) - k_discrete) < 0.2
 
-    # Calculate the maximum possible value for any component based on upper_bound
-    max_component_value = int(upper_bound / np.sqrt(3) / kmin) * kmin
-    
-    # Create a range of possible component values as integers of kmin
-    component_range = np.arange(-max_component_value, max_component_value + kmin, kmin, dtype=np.float32)
-    
-    # Estimate the memory usage of the meshgrid
-    num_elements = len(component_range)**3
-    bytes_per_element = 4  # float32 uses 4 bytes
-    total_memory_usage = (num_elements * bytes_per_element) / (1024**3)  # Convert to GB
-    
-    # Check if the estimated memory usage exceeds the limit
-    if total_memory_usage > memory_limit_gb:
-        raise MemoryError(f"Estimated memory usage of {total_memory_usage:.2f} GB exceeds limit of {memory_limit_gb} GB.")
-    
-    # Generate a grid of kx, ky, kz values
-    kx, ky, kz = np.meshgrid(component_range, component_range, component_range, indexing='ij')
-    
-    # Calculate magnitudes
-    magnitudes = np.sqrt(kx**2 + ky**2 + kz**2)
-    
-    # Boolean indexing to filter vectors within the bounds
-    valid_indices = (magnitudes >= lower_bound) & (magnitudes <= upper_bound)
-    
-    # Use valid indices to filter vectors and their magnitudes
-    valid_kx = kx[valid_indices]
-    valid_ky = ky[valid_indices]
-    valid_kz = kz[valid_indices]
-    valid_magnitudes = magnitudes[valid_indices]
-    
-    # Calculate the closeness to the target magnitude
-    magnitude_diff = np.abs(valid_magnitudes - k_magnitude)
-    
-    # Get indices of the smallest differences, limited to num_kvecs
-    sorted_indices = np.argsort(magnitude_diff)[:num_kvecs]
-    
-    # Extract the valid vectors based on the sorted indices
-    valid_vectors = np.array(list(zip(valid_kx[sorted_indices], valid_ky[sorted_indices], valid_kz[sorted_indices])))
-    
+    valid_kx = kx[close_to_k_discrete]
+    valid_ky = ky[close_to_k_discrete]
+    valid_kz = kz[close_to_k_discrete]
+
+    k_vectors = np.vstack((k_step_x * valid_kx, k_step_y * valid_ky, k_step_z * valid_kz)).T
+    print(f"Found {k_vectors.shape[0]} valid k-vectors.")
+
+    if k_vectors.size == 0:
+        print("No kvectors found!")
+        return
+
     if save_vectors:
-        np.save("k_vectors.npy", valid_vectors)
-    return valid_vectors
+        np.save("k_vectors.npy", k_vectors)
+    
+    return k_vectors
 
 
 def compute_fskt(positions, k_vectors):
-    #k_vectors = find_wave_vectors(k_magnitude=k_max, box_length=box_length, **kwargs)
     dr = positions[1:] - positions[0]
     dr_k = np.dot(dr, k_vectors.T)
     fskt = np.mean(np.cos(dr_k), axis=(1,2))
