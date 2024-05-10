@@ -767,7 +767,7 @@ def create_polydisperse_star(f1, M1, f2, M2, file_name=None):
 
     if file_name is None:
         file_name = 'polydisperse_star.data'
-        
+
     with open(file_name, 'w') as f:
         
         f.write(f'LAMMPS data file for coarse grained star with (f1,M1)=({f1},{M1}) (f2,M2)=({f2},{M2})  \n\n')
