@@ -195,3 +195,143 @@ def create_star(num_arms, arm_length, core_radius=0.5, file_name=None):
         np.savetxt(f, bond, fmt='%4.0f %6.0f %6.0f %6.0f')
 
 
+def create_2d_star(num_arms, arm_length, file_name=None):
+    '''
+    Create a 2D star polymer with a given number of arms and arm length.
+    The core is a circle with radius R = 0.5.
+    The arms are composed of monomers with a bond length of 0.97.
+    The charge is zero for all atoms.
+    The atom number starts from 1.
+    The atom types are 1 for the core and 2 for the rest.
+
+    Parameters
+    ----------
+    num_arms : int
+        Number of arms in the star polymer.
+    arm_length : int
+        Number of monomers in each arm.
+    save_file : str
+        File name to save the data file. Default None will save as '2d_star.data'.
+
+    Returns
+    -------
+    None
+    '''
+    bond_length = 0.97
+    theta = 2*np.pi / num_arms
+
+    core = np.zeros(3)
+    arm_positions = np.zeros((num_arms, arm_length, 3))
+
+
+    for j in range(num_arms):
+        coor = np.zeros((arm_length, 3))
+        for i in range(arm_length):
+            if i == 0:
+                x_new = core[0] + bond_length * np.cos(j * theta)
+                y_new = core[1] + bond_length * np.sin(j * theta)
+            else:
+                x_new = coor[i-1][0] + bond_length * np.cos(j * theta)
+                y_new = coor[i-1][1] + bond_length * np.sin(j * theta)
+            
+            coor[i][0] = x_new
+            coor[i][1] = y_new
+        arm_positions[j, :] = coor[:, :]
+        
+    arm_positions = arm_positions.reshape(num_arms * arm_length, 3)
+    core = core.reshape((1, 3))
+
+    positions = np.concatenate((core, arm_positions))
+
+    num_bonds_arm = arm_length - 1
+    num_atoms = num_arms * arm_length + 1
+    bonds = num_bonds_arm * num_arms + num_arms
+    atomtypes = 2
+    bondtypes = 2
+
+    bxlo = min(positions[:,0]) - 0.1
+    bxhi = max(positions[:,0]) + 0.1
+    bylo = min(positions[:,1]) - 0.1
+    byhi = max(positions[:,1]) + 0.1
+    bzlo = -0.1
+    bzhi = 0.1
+
+    # Create molecule tag
+
+    molecule = np.zeros(num_atoms)
+    molecule[0] = 1
+
+    for i in range(num_arms):
+        for j in range(arm_length):
+            if j == 0:
+                molecule[j+i*arm_length+1] = 1
+            else:
+                molecule[j+i*arm_length+1] = 2 # i+2 for different molecules (?)
+    # Charge
+
+    charge = np.zeros(num_atoms)
+
+    # Atom number                
+
+    num = np.arange(1,num_atoms+1)
+
+    # Type
+
+    types = np.ones(num_atoms) + 1  # 1 for the core, 2 for the rest
+    types[0] = 1
+
+    coordinates = np.zeros((num_atoms, 7))
+
+    coordinates[:, 0] = num
+    coordinates[:, 1] = molecule
+    coordinates[:, 2] = types
+    coordinates[:, 3] = charge
+    coordinates[:, 4:] = positions                
+
+    # Bonds matrix
+
+    bond = np.zeros((bonds, 4))
+    bond[:,0] = np.arange(1,bonds+1)
+
+    for k in range(num_arms):
+        
+        bond[ (k*(arm_length-1)):(k+1)*(arm_length-1), 1] = 2
+        bond[ (k*(arm_length-1)):(k+1)*(arm_length-1), 2] = np.arange( k*arm_length+2, (k+1)*arm_length+1)
+        bond[ (k*(arm_length-1)):(k+1)*(arm_length-1), 3] = np.arange( k*arm_length+3, (k+1)*arm_length+2) 
+
+
+    # Bonds between arms and core
+
+    for k in range(num_arms):
+        bond[num_bonds_arm * num_arms + (k+1)-1, 1] = 1
+        bond[num_bonds_arm * num_arms + (k+1)-1, 2] = k * arm_length + 2
+        bond[num_bonds_arm * num_arms + (k+1)-1, 3] = 1
+
+    # Create LAMMPS data file
+
+    if file_name is None:
+        file_name = '2d_star.data'                
+
+    with open(file_name, 'w') as f:
+        
+        f.write('LAMMPS data file for Coarse Grained GNP\n\n')
+        f.write('%1.0f atoms\n' % num_atoms)
+        f.write('%1.0f atom types\n' % atomtypes)
+        f.write('%1.0f bonds\n' % bonds)            
+        f.write('%1.0f bond types\n' % bondtypes)
+        f.write('0 angles\n')
+        f.write('0 angle types\n')
+        f.write('0 dihedrals\n')            
+        f.write('0 dihedral types\n')
+        f.write('%1.6f %1.6f xlo xhi\n' % (bxlo, bxhi))
+        f.write('%1.6f %1.6f ylo yhi\n' % (bylo, byhi))        
+        f.write('%1.6f %1.6f zlo zhi\n\n' % (bzlo, bzhi))
+        
+        f.write('Masses\n\n')
+        f.write('%1.0f %1.6f\n' % (1, 1))
+        f.write('%1.0f %1.6f\n\n'% (2, 1))
+        f.write('Atoms\n\n')
+        np.savetxt(f, coordinates, fmt='%4.0f %6.0f %6.0f %6.2f %12.6f %12.6f %12.6f')
+        f.write('\n')
+        f.write('Bonds\n\n')
+        np.savetxt(f, bond, fmt='%4.0f %6.0f %6.0f %6.0f')
