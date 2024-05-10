@@ -1,6 +1,69 @@
 import sys
+import math
 import numpy as np
 
+
+def create_ring(num_beads, filename='ring.data'):
+    '''
+    Create a ring polymer with a given number of beads.
+    The ring is centered at the origin and the beads are placed on the circumference of a circle.
+
+
+    Parameters
+    ----------
+    num_beads : int
+        Number of beads in the ring polymer.
+    filename : str
+        File name to save the data file. Default is 'ring.data'.
+
+    Returns
+    -------
+    None
+    '''
+
+    # Calculate the radius for a distance of 1 unit between consecutive beads
+    radius = num_beads / (2 * math.pi)
+
+    # Header for LAMMPS data file with adjusted box dimensions to center the ring
+    header = f"LAMMPS Description\n\n"
+    header += f"{num_beads} atoms\n"
+    header += "1 atom types\n"
+    header += f"{num_beads} bonds\n"
+    header += "1 bond types\n\n"
+    header += "0 angles\n"
+    header += "0 angle types\n"
+    header += "0 dihedrals\n"
+    header += "0 dihedral types\n"
+    box_dim = radius + 1  # Add extra space to the radius for the box dimensions
+    header += f"{-box_dim} {box_dim} xlo xhi\n"
+    header += f"{-box_dim} {box_dim} ylo yhi\n"
+    header += f"-1.0 1.0 zlo zhi\n\n"  # Z dimensions are minimal as it's a 2D simulation
+    header += "Masses\n\n"
+    header += "1 1.0\n\n"
+    
+    # Atoms section
+    atoms_section = "Atoms\n\n"
+    for i in range(num_beads):
+        angle = 2 * math.pi * i / num_beads
+        x = radius * math.cos(angle)
+        y = radius * math.sin(angle)
+        z = 0.0
+        atoms_section += f"{i + 1} 1 {x} {y} {z}\n"
+
+    # Bonds section
+    bonds_section = "Bonds\n\n"
+    for i in range(num_beads):
+        next_bond = i + 1 if i < num_beads - 1 else 0
+        bonds_section += f"{i + 1} 1 {i + 1} {next_bond + 1}\n"
+
+    if file_name is None:
+        file_name = 'ring.data'
+
+    # Write to file
+    with open(file_name, 'w') as file:
+        file.write(header)
+        file.write(atoms_section)
+        file.write(bonds_section)
 
 def create_star(num_arms, arm_length, core_radius=0.5, file_name=None):
     '''
