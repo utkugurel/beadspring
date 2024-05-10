@@ -546,7 +546,7 @@ def create_polydisperse_star(f1, M1, f2, M2, file_name=None):
     The arms are composed of monomers with a bond length of 0.97.
     The charge is zero for all atoms.
     The function creates a star polymer with f1 arms of length M1 and f2 arms of length M2.
-    
+
     Parameters
     ----------
     f1 : int
@@ -558,23 +558,13 @@ def create_polydisperse_star(f1, M1, f2, M2, file_name=None):
     M2 : int
         Number of monomers in each arm.
     save_file : str
-        File name to save the data file. Default None will save as 'star.data'.
+        File name to save the data file. Default None will save as 'polydisperse_star.data'.
 
     Returns
     -------
     None
 
     '''
-
-
-    filename = 'start/star.data' # save direction
-
-    f1 = int(sys.argv[1])
-    M1 = int(sys.argv[2])
-
-    f2 = int(sys.argv[3])
-    M2 = int(sys.argv[4])
-
 
     num_arms = f1 + f2
     num_atoms = f1*M1 + f2*M2 + 1
@@ -775,7 +765,10 @@ def create_polydisperse_star(f1, M1, f2, M2, file_name=None):
 
     # Create LAMMPS data file                
 
-    with open(filename, 'w') as f:
+    if file_name is None:
+        file_name = 'polydisperse_star.data'
+        
+    with open(file_name, 'w') as f:
         
         f.write(f'LAMMPS data file for coarse grained star with (f1,M1)=({f1},{M1}) (f2,M2)=({f2},{M2})  \n\n')
         f.write('%1.0f atoms\n' % num_atoms)
