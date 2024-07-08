@@ -1,6 +1,7 @@
 """Documentation about the beadspring module."""
 import numpy as np
-
+from scipy.spatial.distance import pdist
+from scipy.spatial.distance import cdist
 
 def compute_gyration_tensor(positions):
     """
@@ -73,6 +74,23 @@ def calculate_rg2(lmin, lmid, lmax):
 
     rg2 = lmin + lmid + lmax
     return rg2
+
+def calculate_hydrodynamic_radius(positions):
+    '''
+    Parameters
+    ----------
+    positions : np.ndarray
+        (N, 3) shaped array containing the positions of particles
+    Returns
+    -------
+    hydrodynamic_radius : float
+        Hydrodynamic radius of the polymer chain
+    '''
+    N = len(pdist(positions))
+    inv_dist = (1/pdist(positions)).sum()
+    hydrodynamic_radius = 1/(inv_dist/N)
+    
+    return hydrodynamic_radius    
 
 def calculate_shape_anisotropy(lmin, lmid, lmax):
     '''
