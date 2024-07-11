@@ -45,6 +45,9 @@ def generate_lin_log_timesteps(start_lin_log_power, final_step, save_file=False)
 
     Example:
     >>> generate_lin_log_timesteps(7, 5*10**8, save_file=True)
+    Creates a logarithmically spaced time steps upto 10^7 and
+    then starts over from 10^7+1 upto 5*10^8 restarting the log
+    save every 10^7 steps. 
 
     '''
     # Initial range of powers and base multipliers
