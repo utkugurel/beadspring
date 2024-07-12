@@ -3,7 +3,7 @@ import math
 import numpy as np
 
 
-def create_ring(num_beads, filename='ring.data'):
+def create_ring(num_beads, file_name='ring.data'):
     '''
     Create a ring polymer with a given number of beads.
     The ring is centered at the origin and the beads are placed on the circumference of a circle.
