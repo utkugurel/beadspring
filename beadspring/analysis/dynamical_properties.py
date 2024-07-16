@@ -1,5 +1,8 @@
 import numpy as np
 from itertools import product
+from scipy.optimize import curve_fit
+from scipy.interpolate import interp1d
+from scipy.special import gammainc
 
 
 def compute_msd(positions, per_particle=False):
@@ -189,3 +192,62 @@ def compute_fskt(positions, k_vectors):
     dr_k = np.dot(dr, k_vectors.T)
     fskt = np.mean(np.cos(dr_k), axis=(1,2))
     return fskt
+
+
+def chi_squared(observed, expected, scaling):
+    return ((observed - expected)**2 / scaling).sum()
+
+
+def oneparam_fit(function, x, y):
+    '''
+    Performs a fit on (x, y) as the specified function with one fit parameter
+    Returns fitted parameter and quality factor Q
+    '''
+    
+    popt, _ = curve_fit(function, x, y)
+    p = popt[0]
+    
+    yexp = function(x, p)
+    chi2 = chi_squared(y, yexp, 0.012)
+    dof = len(x) - 1
+    Q = 1 - gammainc(dof/2, chi2/2)
+    
+    return p, Q
+
+
+def fit_msd(t, msd, msd_std, plot=False, title='MSD'):
+    '''
+    Increases begin point of fitting (time_log, msd) until quality factor
+    is above a 1/2. Returns 3D diffusion coefficient and its uncertainty
+    '''
+    def linear(x, b):
+        return x + b
+
+    def diffusion(t, D):
+        return 6*D*t
+    
+    log_t = np.log10(t)         # TODO: Add a checkpoint to prevent zeros in these arrays
+    log_msd = np.log10(msd)
+    
+    # compute bounds of std
+    msd_min = msd - msd_std
+    msd_max = msd + msd_std
+
+    # loop over begin points and compute fit until quality factor >1/2
+    j = -1
+    Q = 0
+    while Q < 1/2:
+        j += 1
+        t_selection = log_t[j:]
+        msd_selection = log_msd[j:]
+        _, Q = oneparam_fit(linear, t_selection, msd_selection)
+        
+    # perform fitting on linear to obtain D and its bounds
+    D, _ = oneparam_fit(diffusion, t[j:], msd[j:])
+    D_min, _ = oneparam_fit(diffusion, t[j:], msd_min[j:])
+    D_max, _ = oneparam_fit(diffusion, t[j:], msd_max[j:])
+    
+    D_sigma = (D_max - D_min) / 2
+    D_unc = D_sigma / np.sqrt(len(log_msd)-1)
+
+    return D, D_unc
