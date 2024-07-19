@@ -63,11 +63,11 @@ def generate_lin_log_timesteps(start_lin_log_power, final_step, save_file=False)
     # Ensure that the initial steps from 1 to 9 are included
     initial_steps = np.arange(1, 10) * 10**0
     log_part = np.unique(np.concatenate((initial_steps, steps)))
-    log_part = log_part.astype(np.int32)
+    log_part = log_part.astype(np.int64)
 
     # Initialize final steps array
     linlog_part = log_part.copy()
-    max_value = np.int32(final_step) # The last simulation step
+    max_value = np.int64(final_step) # The last simulation step
 
     # Iteratively build the sequence until the max value is reached or exceeded
     while linlog_part[-1] < max_value:
@@ -81,7 +81,7 @@ def generate_lin_log_timesteps(start_lin_log_power, final_step, save_file=False)
         linlog_part = np.unique(np.concatenate((linlog_part, next_steps)))
     
     # Append max_value+1 to final_steps to prevent LAMMPS errors
-    linlog_part = np.append(linlog_part, np.int32(max_value+1))
+    linlog_part = np.append(linlog_part, np.int64(max_value+1))
 
     # Optionally save the final_steps into a text file if an argument is provided
     if save_file:
