@@ -1,8 +1,8 @@
 """Utility functions for testing"""
 
+import freud
 import MDAnalysis as mda
 import numpy as np
-import freud
 from pyprojroot.here import here
 
 

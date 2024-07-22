@@ -1,2 +1,2 @@
-from .file_utils import *
 from .build_architectures import *
+from .file_utils import *

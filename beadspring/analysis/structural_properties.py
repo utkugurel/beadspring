@@ -1,6 +1,5 @@
-import numpy as np
 import freud
-
+import numpy as np
 from MDAnalysis.analysis.rdf import InterRDF
 
 

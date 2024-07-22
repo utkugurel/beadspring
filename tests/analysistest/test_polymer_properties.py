@@ -1,12 +1,12 @@
 """Tests for the beadspring.analysis.polymer_properties module."""
 
-import pytest
 import MDAnalysis as mda
 import numpy as np
 import numpy.testing as npt
+import pytest
 from pyprojroot.here import here
-from tests.testing_utils import setup_universe
 
+from tests.testing_utils import setup_universe
 
 universe = setup_universe()
 
@@ -69,10 +69,9 @@ def test_calculate_rg2():
 
 
 def test_calculate_shape_anisotropy():
-    from beadspring.analysis.polymer_properties import calculate_acylindricity
-    from beadspring.analysis.polymer_properties import calculate_asphericity
-    from beadspring.analysis.polymer_properties import calculate_rg2
-    from beadspring.analysis.polymer_properties import calculate_shape_anisotropy
+    from beadspring.analysis.polymer_properties import (
+        calculate_acylindricity, calculate_asphericity, calculate_rg2,
+        calculate_shape_anisotropy)
 
     lmin, lmid, lmax = np.array([32.255394, 39.36003, 50.19259], dtype=np.float32)
 
@@ -107,7 +106,8 @@ def test_calculate_prolateness():
 
 
 def test_identify_end_to_end_vector():
-    from beadspring.analysis.polymer_properties import identify_end_to_end_vector
+    from beadspring.analysis.polymer_properties import \
+        identify_end_to_end_vector
 
     chain = select_single_polymer_chain(universe)
     positions = chain.positions

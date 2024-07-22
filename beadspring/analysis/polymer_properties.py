@@ -1,8 +1,7 @@
 """Documentation about the beadspring module."""
 
 import numpy as np
-from scipy.spatial.distance import pdist
-from scipy.spatial.distance import cdist
+from scipy.spatial.distance import cdist, pdist
 
 
 def compute_gyration_tensor(positions):

@@ -1,7 +1,8 @@
-import numpy as np
 from itertools import product
-from scipy.optimize import curve_fit
+
+import numpy as np
 from scipy.interpolate import interp1d
+from scipy.optimize import curve_fit
 from scipy.special import gammainc
 
 
