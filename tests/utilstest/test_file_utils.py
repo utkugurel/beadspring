@@ -1,6 +1,7 @@
 import os
 from beadspring.utils.file_utils import find_latest_file
 
+
 def test_find_latest_file():
     # Create a temporary directory for testing
     test_dir = "test_directory"

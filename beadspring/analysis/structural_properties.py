@@ -5,13 +5,13 @@ from MDAnalysis.analysis.rdf import InterRDF
 
 
 def compute_rdf_pair(ag1, ag2, r_max=6.0, nbins=75):
-    '''
+    """
     Computes the averaged radial distribution function (RDF)
     between two groups of atoms. From MDAnalysis documentation:
     The RDF effectively counts the average number of ag2
     neighbours in a shell at distance r around a ag1 particle
     and represents it as a density.
-    
+
     Parameters
     ----------
     ag1 : First AtomGroup 1, can be from u.select_atoms()
@@ -22,7 +22,7 @@ def compute_rdf_pair(ag1, ag2, r_max=6.0, nbins=75):
     nbins : Number of bins in the histogram
 
 
-    r_max : float 
+    r_max : float
         Maximum distance to compute the RDF
 
     Returns
@@ -31,10 +31,10 @@ def compute_rdf_pair(ag1, ag2, r_max=6.0, nbins=75):
         bins of radial distribution function (# of bins is 200)
     rdf.rdf : np.ndarray
         radial distribution function
-    
+
     r_min : float
         value of r for which g(r) attains its minimum
-    '''
+    """
 
     rdf_pair = InterRDF(ag1, ag2, range=(0, r_max), nbins=nbins)
     rdf_pair.run()
@@ -46,20 +46,20 @@ def compute_rdf_pair(ag1, ag2, r_max=6.0, nbins=75):
 
     r_min = rdf_bin_centers[index]
     r_peak = rdf_bin_centers[max_ind]
-    
+
     return rdf_bin_centers, rdf_vals, r_min, r_peak
 
 
 def compute_structure_factor_freud(positions, box, bins=100, kmax=8.0, kmin=0.1):
-    '''
+    """
     Computes the static structure factor for a given trajectory
     using the freud library (much faster than the previous implementation)
 
     Parameters
     ----------
-    box : list 
+    box : list
         freud box item ([Lx, Ly, Lz])
-    positions : np.ndarray 
+    positions : np.ndarray
         trajectory array with the shape (traj_length, N, 3)
     kmin : float, optional
         Starting point of S(k) grid. The default is 0.0.
@@ -73,7 +73,7 @@ def compute_structure_factor_freud(positions, box, bins=100, kmax=8.0, kmin=0.1)
     np.ndarray
         The static structure factor.
 
-    '''
+    """
 
     wrapped_positions = box.wrap(positions)
     sf = freud.diffraction.StaticStructureFactorDirect(

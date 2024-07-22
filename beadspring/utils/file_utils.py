@@ -1,6 +1,7 @@
 import os
 import numpy as np
 
+
 def find_latest_file(directory, search_string):
     """
     Find the latest file in a directory where all fiels start with the
@@ -32,9 +33,9 @@ def find_latest_file(directory, search_string):
 
 
 def generate_lin_log_timesteps(start_lin_log_power, final_step, save_file=False):
-    '''
+    """
     Generate a sequence of linearly and logarithmically spaced timesteps for LAMMPS simulations.
-    
+
     Parameters:
     - start_lin_log_power (int): The starting power of 10 after which the logarithmnic spacing starts over.
     - final_step (int): The final simulation step.
@@ -47,15 +48,17 @@ def generate_lin_log_timesteps(start_lin_log_power, final_step, save_file=False)
     >>> generate_lin_log_timesteps(7, 5*10**8, save_file=True)
     Creates a logarithmically spaced time steps upto 10^7 and
     then starts over from 10^7+1 upto 5*10^8 restarting the log
-    save every 10^7 steps. 
+    save every 10^7 steps.
 
-    '''
+    """
     # Initial range of powers and base multipliers
-    powers = np.arange(1, start_lin_log_power)  
-    multipliers = np.arange(1, 11)  
+    powers = np.arange(1, start_lin_log_power)
+    multipliers = np.arange(1, 11)
 
     # Generate all combinations of 10**i * j where i ranges from 1 to 8 and j from 1 to 10
-    all_combinations = 10**powers[:, None] * multipliers  # Broadcasting to create a 2D array of combinations
+    all_combinations = (
+        10 ** powers[:, None] * multipliers
+    )  # Broadcasting to create a 2D array of combinations
 
     # Flatten the array and sort it (flattening turns the 2D array into a 1D array)
     steps = np.unique(all_combinations.ravel())
@@ -67,24 +70,24 @@ def generate_lin_log_timesteps(start_lin_log_power, final_step, save_file=False)
 
     # Initialize final steps array
     linlog_part = log_part.copy()
-    max_value = np.int64(final_step) # The last simulation step
+    max_value = np.int64(final_step)  # The last simulation step
 
     # Iteratively build the sequence until the max value is reached or exceeded
     while linlog_part[-1] < max_value:
         # Generate the next set of steps by adding the spacing to the last element
         next_steps = linlog_part[-1] + log_part
-        
+
         # Keep only new steps that are less than or equal to max_value
         next_steps = next_steps[next_steps <= max_value]
-        
+
         # Concatenate with the existing steps and eliminate duplicates
         linlog_part = np.unique(np.concatenate((linlog_part, next_steps)))
-    
+
     # Append max_value+1 to final_steps to prevent LAMMPS errors
-    linlog_part = np.append(linlog_part, np.int64(max_value+1))
+    linlog_part = np.append(linlog_part, np.int64(max_value + 1))
 
     # Optionally save the final_steps into a text file if an argument is provided
     if save_file:
-        np.savetxt('timesteps.txt', linlog_part, fmt='%d')
-    
+        np.savetxt("timesteps.txt", linlog_part, fmt="%d")
+
     return log_part, linlog_part
