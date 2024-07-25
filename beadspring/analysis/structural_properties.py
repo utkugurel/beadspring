@@ -3,6 +3,40 @@ import numpy as np
 from MDAnalysis.analysis.rdf import InterRDF
 
 
+def compute_rdf(box, positions, r_max=6.0, bins=50):
+    """
+    Computes the radial distribution function (RDF)
+    at a given frame
+
+    Parameters
+    ----------
+    box : freud.box.Box
+        freud box item ([Lx, Ly, Lz])
+    positions : np.ndarray
+        Positions of particles with the shape (N, 3)
+    r_max : float
+        Maximum distance to compute the RDF
+    Returns
+    -------
+    rdf.bin_centers : np.ndarray
+        bins of radial distribution function (# of bins is 50)
+    rdf.rdf : np.ndarray
+        radial distribution function
+
+    r_min : float
+        value of r for which g(r) attains its minimum
+    """
+    system = (box, box.wrap(positions))
+    rdf = freud.density.RDF(bins=bins, r_max=r_max)
+    rdf.compute(system)
+    max_ind = np.where(rdf.rdf == max(rdf.rdf))[0][0]
+    index = np.where(rdf.rdf == min(rdf.rdf[max_ind:]))[0][0]
+    r_min = rdf.bin_centers[index]
+    r_peak = rdf.bin_centers[max_ind]
+    
+    return rdf.bin_centers, rdf.rdf, r_min, r_peak
+
+
 def compute_rdf_pair(ag1, ag2, r_max=6.0, nbins=75):
     """
     Computes the averaged radial distribution function (RDF)
