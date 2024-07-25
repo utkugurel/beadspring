@@ -228,7 +228,7 @@ def oneparam_fit(function, x, y):
     return p, q
 
 
-def fit_msd(t, msd, msd_std, plot=False, title="MSD"):
+def fit_msd_with_quality_control(t, msd, msd_std, plot=False, title="MSD"):
     """
     Increases begin point of fitting (time_log, msd) until quality factor
     is above a 1/2. Returns 3D diffusion coefficient and its uncertainty
@@ -265,3 +265,25 @@ def fit_msd(t, msd, msd_std, plot=False, title="MSD"):
     D_unc = D_sigma / np.sqrt(len(log_msd) - 1)
 
     return D, D_unc
+
+
+def fit_line_with_fixed_slope(x, y):
+    """
+    Fit a straight line to data points by forcing the slope to 1.
+    
+    Parameters:
+    x (array-like): Independent variable data points.
+    y (array-like): Dependent variable data points.
+    
+    Returns:
+    float: The y-intercept of the fitted line.
+    """
+    x = np.array(x)
+    y = np.array(y)
+    
+    # Calculate the y-intercept b
+    b = np.mean(y - x)
+    
+    return b
+
+
