@@ -1,6 +1,93 @@
 import os
 
 import numpy as np
+import MDAnalysis as mda
+import freud
+
+def setup_universe(topology_file, trajectory_file, dt=0.005):
+    """
+    Set up an MDAnalysis universe by loading the topology and trajectory files.
+
+    Parameters
+    ----------
+    topology_file : str
+        The path to the topology file. Usually a .data file.
+    trajectory_file : str
+        The path to the trajectory file. Usually a .dat file.
+    dt : float (optional)
+        The time step of the simulation. Default is 0.005.
+
+    Returns
+    -------
+    universe : MDAnalysis.Universe
+        The MDAnalysis universe
+
+    Example
+    -------
+    >>> topology_file = 'topo.data'
+    >>> trajectory_file = 'traj.dat'
+    >>> u = setup_universe(topology_file, trajectory_file, dt=0.005)
+    """
+    universe = mda.Universe(topology_file, trajectory_file, format='LAMMPSDUMP', dt=dt)
+    return universe
+
+
+def setup_freud_box(lbox, dimensions=3):
+    """
+    Set up a freud box from the box lengths.
+
+    Parameters
+    ----------
+    lbox : float
+        The box length.
+    dimensions : int (optional)
+        The number of dimensions. Default is 3.
+
+    Returns
+    -------
+    box : freud.box.Box
+        The freud box object.
+
+    Example
+    -------
+    >>> lbox = 10.0
+    >>> box = setup_freud_box(lbox, dimensions=3)
+    """
+    if dimensions == 3:
+        box = freud.box.Box(lbox, lbox, lbox, is2D=False)
+    elif dimensions == 2:
+        box = freud.box.Box(lbox, lbox, is2D=True)
+    else:
+        raise ValueError("Only 2D and 3D boxes are supported.")
+    return box
+
+
+def wrap_coordinates(positions, box):
+    """
+    Wrap the coordinates using the freud box object.
+
+    Parameters
+    ----------
+    positions : np.ndarray
+        The positions of the atoms/molecules.
+    box : freud.box.Box
+        The freud box object.
+
+    Returns
+    -------
+    wrapped_positions : np.ndarray
+        The wrapped positions of the universe.
+
+    Example
+    -------
+    >>> u = setup_universe('topo.data', 'traj.dat')
+    >>> positions = u.atoms.positions()
+    >>> box = freud.box.Box.cube(10.0)
+    >>> wrapped_positions = wrap_coordinates(positions, box)
+    """
+    unwrapped_coordinates = positions.copy()
+    wrapped_coordinates = box.wrap(unwrapped_coordinates)
+    return wrapped_coordinates
 
 
 def find_latest_file(directory, search_string):
