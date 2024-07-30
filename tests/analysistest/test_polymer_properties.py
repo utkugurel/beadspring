@@ -11,9 +11,9 @@ from tests.testing_utils import setup_universe
 universe = setup_universe()
 
 
-def select_single_polymer_chain(u):
+def select_linear_chain(u):
     """Select a single polymer as an atom group"""
-    chain = u.select_atoms("type 1").residues[0].atoms
+    chain = u.select_atoms("type 4").residues[0].atoms
     return chain
 
 
@@ -21,18 +21,18 @@ def test_compute_gyration_tensor(u=universe):
     """Test the values of gyration tensor"""
     from beadspring.analysis.polymer_properties import compute_gyration_tensor
 
-    chain = select_single_polymer_chain(u)
+    chain = select_linear_chain(u)
     positions = chain.positions
     expected_tensor = np.array(
         [
-            [37.116905, 2.8693573, 2.8826792],
-            [2.8693573, 49.027607, -3.3597746],
-            [2.8826792, -3.3597746, 35.663506],
+            [7.023423, 1.217949, 1.8205513],
+            [1.217949, 7.399779, -4.4355016],
+            [1.8205513, -4.4355016, 5.156402],
         ],
         dtype=np.float32,
     )
 
-    expected_evals = np.array([32.255394, 39.36003, 50.19259], dtype=np.float32)
+    expected_evals = np.array([0.92054224, 7.7983627, 10.860699], dtype=np.float32)
     tensor, evals = compute_gyration_tensor(positions)
     npt.assert_allclose(tensor, expected_tensor, rtol=1e-5)
     npt.assert_allclose(evals, expected_evals, rtol=1e-5)
@@ -41,7 +41,7 @@ def test_compute_gyration_tensor(u=universe):
 def test_calculate_asphericity():
     from beadspring.analysis.polymer_properties import calculate_asphericity
 
-    lmin, lmid, lmax = np.array([32.255394, 39.36003, 50.19259], dtype=np.float32)
+    lmin, lmid, lmax = np.array([0.92054224, 7.7983627, 10.860699], dtype=np.float32)
 
     expected_asphericity = lmax - 0.5 * (lmin + lmid)
     asphericity = calculate_asphericity(lmin, lmid, lmax)
@@ -51,7 +51,7 @@ def test_calculate_asphericity():
 def test_calculate_acylindricity():
     from beadspring.analysis.polymer_properties import calculate_acylindricity
 
-    lmin, lmid, lmax = np.array([32.255394, 39.36003, 50.19259], dtype=np.float32)
+    lmin, lmid, lmax = np.array([0.92054224, 7.7983627, 10.860699], dtype=np.float32)
 
     expected_acylindricity = lmid - lmin
     acylindricity = calculate_acylindricity(lmin, lmid, lmax)
@@ -61,7 +61,7 @@ def test_calculate_acylindricity():
 def test_calculate_rg2():
     from beadspring.analysis.polymer_properties import calculate_rg2
 
-    lmin, lmid, lmax = np.array([32.255394, 39.36003, 50.19259], dtype=np.float32)
+    lmin, lmid, lmax = np.array([0.92054224, 7.7983627, 10.860699], dtype=np.float32)
 
     expected_rg2 = lmin + lmid + lmax
     rg2 = calculate_rg2(lmin, lmid, lmax)
@@ -73,7 +73,7 @@ def test_calculate_shape_anisotropy():
         calculate_acylindricity, calculate_asphericity, calculate_rg2,
         calculate_shape_anisotropy)
 
-    lmin, lmid, lmax = np.array([32.255394, 39.36003, 50.19259], dtype=np.float32)
+    lmin, lmid, lmax = np.array([0.92054224, 7.7983627, 10.860699], dtype=np.float32)
 
     num = (
         calculate_asphericity(lmin, lmid, lmax) ** 2
@@ -89,7 +89,7 @@ def test_calculate_shape_anisotropy():
 def test_calculate_prolateness():
     from beadspring.analysis.polymer_properties import calculate_prolateness
 
-    lmin, lmid, lmax = np.array([32.255394, 39.36003, 50.19259], dtype=np.float32)
+    lmin, lmid, lmax = np.array([0.92054224, 7.7983627, 10.860699], dtype=np.float32)
 
     n1 = 2 * np.sqrt(lmin) - np.sqrt(lmid) - np.sqrt(lmax)
     n2 = 2 * np.sqrt(lmid) - np.sqrt(lmin) - np.sqrt(lmax)
@@ -109,7 +109,7 @@ def test_identify_end_to_end_vector():
     from beadspring.analysis.polymer_properties import \
         identify_end_to_end_vector
 
-    chain = select_single_polymer_chain(universe)
+    chain = select_linear_chain(universe)
     positions = chain.positions
     expected_end_to_end_vector = positions[-1] - positions[0]
     expected_end_to_end_vector = expected_end_to_end_vector.reshape(1, 3)
@@ -117,10 +117,37 @@ def test_identify_end_to_end_vector():
     npt.assert_allclose(end_to_end_vector, expected_end_to_end_vector, rtol=1e-5)
 
 
-# TODO: Add test for calculate_end_to_end_correlation
-# def test_calculate_end_to_end_correlation():
-#    from beadspring.analysis.polymer_properties import calculate_end_to_end_correlation
+def test_calculate_end_to_end_correlation():
+    from beadspring.analysis.polymer_properties import \
+        calculate_end_to_end_correlation
 
-# TODO: Add test for calculate_end_to_end_correlation_optimised
-# def test_calculate_end_to_end_correlation_optimised():
-#    from beadspring.analysis.polymer_properties import calculate_end_to_end_correlation_optimised
+    N_FRAMES = universe.trajectory.n_frames
+    N_CHAINS = universe.select_atoms("type 4").n_residues
+    end_to_end_vector = np.zeros((N_FRAMES, N_CHAINS, 3))
+    expected_correlation = np.zeros(N_FRAMES)
+    linear_chains = universe.select_atoms("type 4").residues
+    for i, ts in enumerate(universe.trajectory):
+        for j, elem in enumerate(linear_chains):
+            positions = elem.atoms.positions
+            end_to_end_vector[i, j] = positions[-1] - positions[0]
+
+    for i in range(N_FRAMES):
+        denominator = np.array(
+            [
+                np.inner(end_to_end_vector[0, j], end_to_end_vector[0, j])
+                for j in range(N_CHAINS)
+            ]
+        )
+        inner_products = np.array(
+            [
+                np.dot(end_to_end_vector[0, j], end_to_end_vector[i, j])
+                for j in range(N_CHAINS)
+            ]
+        )
+        expected_correlation[i] = np.mean(inner_products / denominator)
+
+    # expected_correlation = np.dot(end_to_end_vector.T, end_to_end_vector)
+    correlation = calculate_end_to_end_correlation(end_to_end_vector)
+    npt.assert_allclose(correlation, expected_correlation, rtol=1e-5)
+    #TODO: This testing is based on another implementation of the same function.
+    # We should test the other function too.
