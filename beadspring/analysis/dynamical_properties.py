@@ -51,7 +51,7 @@ def compute_ngp(positions):
     ngp : np.ndarray
         Non-Gaussian parameter -> len (traj_length)
     """
-    dx2 = np.sum((positions[1:] - positions[0]) ** 2, axis=2)
+    dx2 = np.sum((positions[1:] - positions[0]) ** 2, axis=2) # MSD per particle
     dx4 = np.sum((positions[1:] - positions[0]) ** 4, axis=2)
 
     dr2 = np.mean(dx2, axis=1)  # note that this is the MSD
