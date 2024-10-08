@@ -130,66 +130,28 @@ def compute_van_hove_correlation(positions, time_log, bins=100, rmax=8.0):
 
 
 def get_k_vectors(
-    ktarget, box_length, max_points=1000, save_vectors=False, memory_limit_gb=8.0
+    ktarget, box_length, max_points=1000, save_vectors=False,
 ):
-
-    #!TODO: Update the below values accordingly to support non-cubic boxes
-    k_step_x = 2 * np.pi / box_length
-    k_step_y = 2 * np.pi / box_length
-    k_step_z = 2 * np.pi / box_length
-    k_discrete = ktarget / min(k_step_x, k_step_y, k_step_z)
+    k_step = 2 * np.pi / box_length
+    k_discrete = ktarget / k_step
     k_max = int(np.ceil(k_discrete))
 
-    # Estimate memory usage
-    num_elements = k_max**3  # Total elements in one array
-    bytes_per_element = 4  # Assuming 64-bit integers
-    total_bytes = num_elements * bytes_per_element * 3  # For kx, ky, kz
-    total_gigabytes = total_bytes / (1024**3)
+    # Generate all possible k-indices within the range
+    n_values = np.arange(-k_max, k_max + 1)
+    k_indices = np.array(list(product(n_values, repeat=3)))
 
-    if total_gigabytes >= memory_limit_gb:
-        print(
-            f"Estimated memory required: {total_gigabytes:.2f} GB exceeds {memory_limit_gb}GB, aborting..."
-        )
-        return
+    # Compute magnitudes and filter
+    k_magnitudes = np.linalg.norm(k_indices, axis=1)
+    close_to_k_discrete = np.abs(k_magnitudes - k_discrete) < 0.1
+    valid_indices = k_indices[close_to_k_discrete]
 
-    kx, ky, kz = np.meshgrid(
-        np.arange(k_max), np.arange(k_max), np.arange(k_max), indexing="ij"
-    )
-    magnitudes_squared = kx**2 + ky**2 + kz**2
-    close_to_k_discrete = np.abs(np.sqrt(magnitudes_squared) - k_discrete) < 0.2
+    # Compute actual k-vectors
+    k_vectors = valid_indices * k_step
 
-    valid_kx = kx[close_to_k_discrete]
-    valid_ky = ky[close_to_k_discrete]
-    valid_kz = kz[close_to_k_discrete]
-
-    # Generate all sign permutations
-    signs = np.array(list(product([-1, 1], repeat=3)))
-    all_vectors = []
-
-    for sign in signs:
-        signed_vectors = np.column_stack(
-            [
-                sign[0] * valid_kx * k_step_x,
-                sign[1] * valid_ky * k_step_y,
-                sign[2] * valid_kz * k_step_z,
-            ]
-        )
-        all_vectors.append(signed_vectors)
-
-    k_vectors = np.vstack(all_vectors)
-
-    print(f"Found {k_vectors.shape[0]} valid k-vectors.")
-
-    if k_vectors.size == 0:
-        print("No kvectors found!")
-        return
-
-    # Sample k-vectors if necessary
+    # Sample if necessary
     if len(k_vectors) > max_points:
-        np.random.seed(42)
-        k_vectors = k_vectors[
-            np.random.choice(len(k_vectors), max_points, replace=False)
-        ]
+        np.random.seed(1)
+        k_vectors = k_vectors[np.random.choice(len(k_vectors), max_points, replace=False)]
 
     if save_vectors:
         np.save("k_vectors.npy", k_vectors)
