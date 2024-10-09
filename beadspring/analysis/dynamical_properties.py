@@ -166,6 +166,17 @@ def compute_fskt(positions, k_vectors):
     return fskt
 
 
+def compute_fskt_batched(positions, k_vectors, batch_size=100):
+    num_batches = int(np.ceil(len(k_vectors) / batch_size))
+    fskt = np.zeros(positions.shape[0] - 1)
+    for i in range(num_batches):
+        k_batch = k_vectors[i * batch_size : (i + 1) * batch_size]
+        dr_k = np.dot(positions[1:] - positions[0], k_batch.T)
+        fskt_batch = np.mean(np.cos(dr_k), axis=(1, 2))
+        fskt += fskt_batch * len(k_batch)
+    fskt /= len(k_vectors)
+    return fskt
+
 def chi_squared(observed, expected, scaling):
     return ((observed - expected) ** 2 / scaling).sum()
 
