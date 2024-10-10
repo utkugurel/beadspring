@@ -17,9 +17,8 @@ dependencies:
   - scikit-learn=1.4.0
   - scipy=1.12.0
   - signac=2.1.0
-  - signac-dashboard=0.6.1
   - signac-flow=0.26.1
-  - spyder=5.5.0
+  - numba=0.59.0
   - pip:
       - atooms==3.20.1
       - atooms-pp==3.4.0
