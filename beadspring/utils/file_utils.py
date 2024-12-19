@@ -130,7 +130,8 @@ def generate_lin_log_timesteps(start_lin_log_power, final_step, save_file=False)
     - save_file (bool): Whether to save the generated timesteps to a text file.
 
     Returns:
-    - np.ndarray: An array of timesteps for LAMMPS simulations.
+    - np.ndarray: An array of timesteps with logarithmic spacing (as in LAMMPS).
+    - np.ndarray: An array of special timesteps with a combination of linear and logarithmic spacing.
 
     Example:
     >>> generate_lin_log_timesteps(7, 5*10**8, save_file=True)
