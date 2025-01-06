@@ -255,30 +255,23 @@ def compute_bond_lengths(atom_group):
     return bond_length
 
 
-def compute_p2(universe, reference_axis=np.array([1, 0, 0])):
+def compute_p2_from_vectors(bond_vectors, reference_axis=np.array([1, 0, 0])):
     """
-    Compute the P2 parameter for a polymer chain using bond orientations from an MDAnalysis Universe.
-    
+    Compute the P2 parameter for a polymer chain from bond vectors.
+
     Parameters:
-        universe (MDAnalysis.Universe): The MDAnalysis Universe containing the polymer chain.
-        reference_axis (numpy.ndarray): The reference direction vector (default is z-axis).
-        
+        bond_vectors (numpy.ndarray): Array of bond vectors (N, 3).
+        reference_axis (numpy.ndarray): The reference direction vector (default is x-axis).
+
     Returns:
         float: The P2 parameter of the bonds.
     """
     # Normalize the reference axis
     reference_axis = reference_axis / np.linalg.norm(reference_axis)
-    
-    
-    # Get the positions of the two atoms in the bond
-    pos1 = universe.atoms.bonds.atom1.positions
-    pos2 = universe.atoms.bonds.atom2.positions
-    
-    # Compute the bond vector and normalize it
-    bond_vectors = pos2 - pos1
-    norm = np.linalg.norm(bond_vectors, axis=1)
-    bond_vectors = bond_vectors / norm[:, np.newaxis]
-    
+
+    # Normalize bond vectors
+    bond_vectors = bond_vectors / np.linalg.norm(bond_vectors, axis=1)[:, np.newaxis]
+
     # Compute cosine of angles between bond vectors and the reference axis
     cos_theta = np.dot(bond_vectors, reference_axis)
 
@@ -286,6 +279,26 @@ def compute_p2(universe, reference_axis=np.array([1, 0, 0])):
     p2_values = 0.5 * (3 * cos_theta**2 - 1)
 
     # Compute the average P2 value
-    p2_average = np.mean(p2_values)
+    return np.mean(p2_values)
 
-    return p2_average
+
+def compute_p2(universe, reference_axis=np.array([1, 0, 0])):
+    """
+    Compute the P2 parameter for a polymer chain using bond orientations from an MDAnalysis Universe.
+    
+    Parameters:
+        universe (MDAnalysis.Universe): The MDAnalysis Universe containing the polymer chain.
+        reference_axis (numpy.ndarray): The reference direction vector (default is x-axis).
+        
+    Returns:
+        float: The P2 parameter of the bonds.
+    """
+    # Get the positions of the two atoms in the bond
+    pos1 = universe.atoms.bonds.atom1.positions
+    pos2 = universe.atoms.bonds.atom2.positions
+
+    # Compute bond vectors
+    bond_vectors = pos2 - pos1
+
+    # Delegate P2 computation to the helper function
+    return compute_p2_from_vectors(bond_vectors, reference_axis=reference_axis)
