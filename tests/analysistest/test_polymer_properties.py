@@ -5,10 +5,31 @@ import numpy as np
 import numpy.testing as npt
 import pytest
 from pyprojroot.here import here
+from unittest.mock import MagicMock
+
 
 from tests.testing_utils import setup_universe
 
 universe = setup_universe()
+
+
+@pytest.fixture
+def mock_universe():
+    """Fixture to create a mock MDAnalysis universe."""
+    mock_universe = MagicMock()
+
+    # Mock bond positions
+    mock_universe.atoms.bonds.atom1.positions = np.array([
+        [0.0, 0.0, 0.0],
+        [1.0, 0.0, 0.0],
+        [2.0, 0.0, 0.0],
+    ])
+    mock_universe.atoms.bonds.atom2.positions = np.array([
+        [1.0, 0.0, 0.0],
+        [2.0, 0.0, 0.0],
+        [3.0, 0.0, 0.0],
+    ])
+    return mock_universe
 
 
 def select_linear_chain(u):
@@ -151,3 +172,64 @@ def test_calculate_end_to_end_correlation():
     npt.assert_allclose(correlation, expected_correlation, rtol=1e-5)
     #TODO: This testing is based on another implementation of the same function.
     # We should test the other function too.
+
+
+def test_compute_p2_from_vectors():
+    """Test the compute_p2_from_vectors function."""
+    from beadspring.analysis.polymer_properties import compute_p2_from_vectors
+
+    # Case 1: Perfect alignment with reference axis
+    bond_vectors = np.array([
+        [1.0, 0.0, 0.0],
+        [1.0, 0.0, 0.0],
+        [1.0, 0.0, 0.0],
+    ])
+    reference_axis = np.array([1, 0, 0])
+    expected_p2 = 1.0  # Perfect alignment
+    p2 = compute_p2_from_vectors(bond_vectors, reference_axis)
+    npt.assert_allclose(p2, expected_p2, rtol=1e-5)
+
+    # Case 2: Orthogonal to reference axis
+    bond_vectors = np.array([
+        [0.0, 1.0, 0.0],
+        [0.0, 1.0, 0.0],
+        [0.0, 1.0, 0.0],
+    ])
+    expected_p2 = -0.5  # Perfect orthogonal
+    p2 = compute_p2_from_vectors(bond_vectors, reference_axis)
+    npt.assert_allclose(p2, expected_p2, rtol=1e-5)
+
+    # Case 3: Random bond orientations
+    bond_vectors = np.random.rand(10, 3)
+    p2 = compute_p2_from_vectors(bond_vectors, reference_axis)
+    assert -0.5 <= p2 <= 1, "P2 should be in the range [-0.5, 1]"
+
+    # Case 4: Single bond
+    bond_vectors = np.array([
+        [1.0, 1.0, 1.0],
+    ])
+    p2 = compute_p2_from_vectors(bond_vectors, reference_axis)
+    assert -0.5 <= p2 <= 1, "P2 for a single bond should also be in the range [-0.5, 1]"
+
+
+def test_compute_p2(mock_universe):
+    """Test the compute_p2 function using a mock universe."""
+    from beadspring.analysis.polymer_properties import compute_p2
+
+    # Mock bond positions
+    mock_universe.atoms.bonds.atom1.positions = np.array([
+        [0.0, 0.0, 0.0],
+        [1.0, 0.0, 0.0],
+        [2.0, 0.0, 0.0],
+    ])
+    mock_universe.atoms.bonds.atom2.positions = np.array([
+        [1.0, 0.0, 0.0],
+        [2.0, 0.0, 0.0],
+        [3.0, 0.0, 0.0],
+    ])
+
+    # Compute P2 for perfect alignment
+    reference_axis = np.array([1, 0, 0])
+    expected_p2 = 1.0
+    p2 = compute_p2(mock_universe, reference_axis=reference_axis)
+    npt.assert_allclose(p2, expected_p2, rtol=1e-5)
