@@ -29,6 +29,11 @@ def mock_universe():
         [2.0, 0.0, 0.0],
         [3.0, 0.0, 0.0],
     ])
+
+    #TODO: Add more mock attributes and methods to replace the 
+    # actual MDAnalysis Universe object in the below test functions.
+    # Currently, the mock object is only used for testing P2 functions.
+
     return mock_universe
 
 
