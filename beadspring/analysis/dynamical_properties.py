@@ -260,3 +260,26 @@ def fit_line_with_fixed_slope(x, y):
     return b
 
 
+def compute_vacf(velocities):
+    """
+    Computes the velocity autocorrelation function for a given trajectory.
+
+    Parameters
+    ----------
+    velocities : np.ndarray
+        trajectory array with the shape (traj_length, N, 3)
+
+    Returns
+    -------
+    vacf : np.ndarray
+        Velocity autocorrelation function -> len (traj_length - 1)
+    """
+    v0 = velocities[0] 
+    v0_dot = np.sum(v0 * v0)
+
+    dot_products = np.einsum('ij,tij->t', v0, velocities)
+
+    vacf = dot_products / v0_dot
+    
+    return vacf
+
