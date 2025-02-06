@@ -180,3 +180,87 @@ def generate_lin_log_timesteps(start_lin_log_power, final_step, save_file=False)
         np.savetxt("timesteps.txt", linlog_part, fmt="%d")
 
     return log_part, linlog_part
+
+def convert_data_to_molecule(data_file, output_file):
+    """
+    Convert a LAMMPS data file into a molecule file format.
+
+    The function reads atom and bond data from the input file and writes them
+    in the molecule format. This is mainly useful when using the fix bond/react 
+    command.
+
+    The molecule file format follows the LAMMPS specifications:
+    https://docs.lammps.org/molecule.html
+
+    Parameters
+    ----------
+    data_file : str
+        Name of the input LAMMPS data file.
+    output_file : str
+        Name of the output molecule file.
+
+    Returns
+    -------
+    None
+    """
+    # Check if the input file exists
+    if not os.path.isfile(data_file):
+        print(f"Error: The file '{data_file}' does not exist.")
+        return
+
+    # Read the input file line by line
+    with open(data_file, "r") as f:
+        lines = f.readlines()
+
+    atoms = []  # List to store atom data
+    bonds = []  # List to store bond data
+    reading_atoms = False  # Flag to track atom section
+    reading_bonds = False  # Flag to track bond section
+
+    # Process each line in the file
+    for line in lines:
+        if "Atoms" in line:  # Start reading atoms
+            reading_atoms = True
+            continue
+        if "Bonds" in line:  # Start reading bonds
+            reading_atoms = False
+            reading_bonds = True
+            continue
+        if reading_atoms and line.strip() and not line.startswith("#"):
+            # Extract atom data
+            parts = line.split()
+            atom_id = int(parts[0])
+            atom_type = int(parts[2])
+            x, y, z = float(parts[4]), float(parts[5]), float(parts[6])
+            atoms.append((atom_id, atom_type, x, y, z))
+        if reading_bonds and line.strip() and not line.startswith("#"):
+            # Extract bond data
+            parts = line.split()
+            bond_id = int(parts[0])
+            bond_type = int(parts[1])
+            atom1, atom2 = int(parts[2]), int(parts[3])
+            bonds.append((bond_id, bond_type, atom1, atom2))
+
+    # Write the output molecule file
+    with open(output_file, "w") as f:
+        # Write file header with input filename
+        f.write(f"molecule created from {data_file}\n\n")
+        f.write(f"{len(atoms)} atoms\n")
+        f.write(f"{len(bonds)} bonds\n")
+        f.write("0 angles\n0 dihedrals\n\n")
+
+        # Write atom types
+        f.write("Types\n\n")
+        for atom_id, atom_type, _, _, _ in atoms:
+            f.write(f"{atom_id} {atom_type}\n")
+
+        # Write atom coordinates
+        f.write("\nCoords\n\n")
+        for atom_id, _, x, y, z in atoms:
+            f.write(f"{atom_id:4d} {x:12.6f} {y:12.6f} {z:12.6f}\n")
+
+        # Write bond information
+        f.write("\nBonds\n\n")
+        for bond_id, bond_type, atom1, atom2 in bonds:
+            f.write(f"{bond_id:4d} {bond_type:4d} {atom1:4d} {atom2:4d}\n")
+
