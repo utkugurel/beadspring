@@ -33,6 +33,7 @@ git clone git@github.com:utkugurel/beadspring.git
 ##### Install the dependencies in a conda environment and activate `bsa`
 
 ```bash
+cd beadspring/
 conda env create -f environment.yml
 conda activate bsa
 ```
@@ -94,7 +95,7 @@ def main():
 
     # Loop over the trajectory and load the positions
     for i,traj in enumerate(u.trajectory):                          
-        positions[i] = u.atoms..positions   
+        positions[i] = u.atoms.positions   
         time[i] = u.trajectory.ts.data['time']
 
     # Now use bsa to calculate the hydrodynamics radius
