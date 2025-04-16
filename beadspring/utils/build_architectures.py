@@ -854,3 +854,138 @@ def create_polydisperse_star(f1, M1, f2, M2, file_name=None):
         f.write("\n")
         f.write("Bonds\n\n")
         np.savetxt(f, bond, fmt="%4.0f %6.0f %6.0f %6.0f")
+
+def create_linear_chain(filename, format='data', no_of_monomers=20, bond_len=0.97,
+                           bounds=(-100, 100, -100, 100, -100, 100), dmin=1.5,
+                           masses=[1.0], with_angles=True):
+    
+    """
+    Generate a linear polymer chain and write it to a file in either LAMMPS data format or a simple molecule format.
+    
+    Parameters:
+    -----------
+    filename : str
+        Name of the output file.
+    format : str, optional
+        Output format: 'data' for LAMMPS data file format, 'molecule' for LAMMPS molecule format (default: 'data').
+    no_of_monomers : int, optional
+        Number of monomers in the chain (default: 20).
+    bond_len : float, optional
+        Desired bond length between adjacent monomers (default: 0.97).
+    bounds : tuple of float, optional
+        Simulation box bounds as (xlo, xhi, ylo, yhi, zlo, zhi) (default: (-100, 100, -100, 100, -100, 100)).
+    dmin : float, optional
+        Minimum allowed distance between non-bonded second neighbors to avoid overlaps (default: 1.5).
+    masses : list of float, optional
+        List of atomic masses by type. Only one atom type is supported in the current version (default: [1.0]).
+    with_angles : bool, optional
+        Whether to include angle information (default: True). Ignored for 'molecule' format.
+    
+    Returns
+    -------
+    None
+    """
+    
+    if dmin > 2 * bond_len:
+        raise ValueError(f"dmin must not exceed 2 * bond_len ({2 * bond_len}). Got dmin = {dmin}.")
+
+
+    def random_xyz_coordinates(bond_len):
+        vec = np.random.normal(size=3)
+        vec /= np.linalg.norm(vec)
+        return vec * bond_len
+
+    def is_outside_bounds(x, y, z, bounds):
+        xlo, xhi, ylo, yhi, zlo, zhi = bounds
+        return not (xlo <= x <= xhi and ylo <= y <= yhi and zlo <= z <= zhi)
+
+    def too_close_to_second_neighbor(x, y, z, second_neighbor, dmin):
+        dx, dy, dz = x - second_neighbor[0], y - second_neighbor[1], z - second_neighbor[2]
+        return np.sqrt(dx**2 + dy**2 + dz**2) <= dmin
+
+    def chain_coordinates(no_of_monomers, bond_len, bounds, dmin):
+        coor = np.zeros((no_of_monomers, 3))  # First monomer at origin
+        for i in range(1, no_of_monomers):
+            while True:
+                dx, dy, dz = random_xyz_coordinates(bond_len)
+                x = coor[i - 1, 0] + dx
+                y = coor[i - 1, 1] + dy
+                z = coor[i - 1, 2] + dz
+
+                if is_outside_bounds(x, y, z, bounds):
+                    continue
+                if i >= 2 and too_close_to_second_neighbor(x, y, z, coor[i - 2], dmin):
+                    continue
+
+                coor[i] = [x, y, z]
+                break
+        return coor
+
+    def write_molecule(filename, coordinates):
+        with open(filename, 'w') as f:
+            f.write(f"\n\n{len(coordinates)} atoms\n")
+            f.write(f"{len(coordinates) - 1} bonds\n\n")
+            f.write("Types\n\n")
+            for i in range(1, len(coordinates) + 1):
+                f.write(f"{i} 1\n")
+            f.write("\nCoords\n\n")
+            for i, (x, y, z) in enumerate(coordinates, 1):
+                f.write(f"{i}  {x:.4f} {y:.4f} {z:.4f}\n")
+            f.write("\nBonds\n\n")
+            for i in range(1, len(coordinates)):
+                f.write(f"{i} 1 {i} {i+1}\n")
+
+    def write_lammps_data(filename, coordinates, masses, bond_list, angle_list,
+                          box_bounds, atomtypes=1, bondtypes=1, angletypes=3):
+        num_atoms = len(coordinates)
+        num_bonds = len(bond_list)
+        num_angles = len(angle_list) if angle_list else 0
+        bxlo, bxhi, bylo, byhi, bzlo, bzhi = box_bounds
+
+        with open(filename, 'w') as f:
+            f.write(f'Linear polymer chain with {num_atoms} atoms\n\n')
+            f.write(f'{num_atoms} atoms\n')
+            f.write(f'{atomtypes} atom types\n')
+            f.write(f'{num_bonds} bonds\n')
+            f.write(f'{bondtypes} bond types\n')
+            f.write(f'{num_angles} angles\n')
+            f.write(f'{angletypes if with_angles else 0} angle types\n')
+            f.write('0 dihedrals\n')
+            f.write('0 dihedral types\n\n')
+            f.write(f'{bxlo :.6f} {bxhi :.6f} xlo xhi\n')
+            f.write(f'{bylo :.6f} {byhi :.6f} ylo yhi\n')
+            f.write(f'{bzlo :.6f} {bzhi :.6f} zlo zhi\n\n')
+            f.write('Masses\n\n')
+            for i, mass in enumerate(masses):
+                f.write(f'{i+1} {mass}\n')
+            f.write('\nAtoms # full\n\n')
+            atom_data = []
+            for i, (x, y, z) in enumerate(coordinates, 1):
+                atom_data.append([i, 1, 1, 0.0, x, y, z])
+            np.savetxt(f, atom_data, fmt='%4.0f %6.0f %6.0f %6.2f %12.6f %12.6f %12.6f')
+            f.write('\nBonds\n\n')
+            np.savetxt(f, bond_list, fmt='%4.0f %6.0f %6.0f %6.0f')
+            if with_angles and angle_list:
+                f.write('\nAngles\n\n')
+                np.savetxt(f, angle_list, fmt='%4.0f %6.0f %6.0f %6.0f %6.0f')
+
+    # === Generate polymer data ===
+    coords = chain_coordinates(no_of_monomers, bond_len, bounds, dmin)
+    bonds = [[i, 1, i, i + 1] for i in range(1, no_of_monomers)]
+    angles = [[i, 1, i, i + 1, i + 2] for i in range(1, no_of_monomers - 1)] if with_angles else []
+
+    if format == 'molecule':
+        write_molecule(filename, coords)
+    elif format == 'data':
+        write_lammps_data(
+            filename=filename,
+            coordinates=coords,
+            masses=masses,
+            bond_list=bonds,
+            angle_list=angles,
+            box_bounds=bounds,
+            angletypes=3
+        )
+    else:
+        raise ValueError("Unsupported format. Use 'data' or 'molecule'.")
+        
