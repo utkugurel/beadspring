@@ -58,9 +58,7 @@ pip install -e .
 
 ##### Check the installation
 ```bash
-$ python -m beadspring
-#or
-$ beadspring
+$ python -c "import beadspring"
 ```
 ###### Optional: Run the tests under `beadspring` directory
 
