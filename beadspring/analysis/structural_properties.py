@@ -2,6 +2,7 @@ import freud
 import numpy as np
 from MDAnalysis.analysis.rdf import InterRDF
 from MDAnalysis.analysis import contacts
+from MDAnalysis.analysis import lineardensity
 from scipy.spatial import ConvexHull
 from numpy.fft import fftn, fftshift
 
@@ -368,3 +369,38 @@ def bounding_sphere(positions):
     radius = np.max(np.linalg.norm(hull_points - centre, axis=1))
 
     return radius, centre
+
+def compute_linear_density(atomgroup, trajectory_slice, axis = 'y', binsize = 1.0):
+    """
+    Compute the linear mass density of an atom group over a trajectory.
+
+    Parameters:
+        atomgroup: MDAnalysis AtomGroup
+            The group of atoms to analyze.
+        trajectory_slice: iterable
+            A slice or iterable of trajectory frames.
+        axis: str
+            Axis along which to calculate density ('x', 'y', or 'z').
+        binsize: float
+            Bin width for the density calculation.
+
+    Returns: np.ndarray
+        2D array of linear mass density per frame with the shape (num_frames, num_bins)
+    """
+
+    num_frames   = len(trajectory_slice)
+    max_box_size = max(atomgroup.universe.dimensions[:3])
+    # num of columns is always equal to largest_dimension/binsize
+    num_bins = int(max_box_size / binsize)
+
+    density_analyzer = lineardensity.LinearDensity(atomgroup, binsize=binsize)
+    density_array = np.zeros((num_frames, num_bins))
+
+    for ts in trajectory_slice:
+
+        frame_idx = ts.frame
+        density_analyzer.run(frames=[frame_idx], verbose=False)
+        density_array[frame_idx,:] = density_analyzer.results[axis]['mass_density']
+
+    return density_array
+
