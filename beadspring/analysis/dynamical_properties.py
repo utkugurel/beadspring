@@ -205,14 +205,14 @@ np.ndarray
 
 Examples
 --------
->>> fskt = compute_fskt(positions, k_vectors)
->>> print(fskt.shape)
+>>> self_intermediate_sf = compute_fskt(positions, k_vectors)
+>>> print(self_intermediate_sf.shape)
 (99,)
 """
     dr = positions[1:] - positions[0]
-    dr_k = np.dot(dr, k_vectors.T)
-    fskt = np.mean(np.cos(dr_k), axis=(1, 2))
-    return fskt
+    displacement_dot_k = np.dot(dr, k_vectors.T)
+    self_intermediate_sf = np.mean(np.cos(displacement_dot_k), axis=(1, 2))
+    return self_intermediate_sf
 
 
 def compute_fskt_batched(positions, k_vectors, batch_size=100):
@@ -235,19 +235,19 @@ np.ndarray
 
 Examples
 --------
->>> fskt = compute_fskt_batched(positions, k_vectors, batch_size=50)
->>> print(fskt.shape)
+>>> self_intermediate_sf = compute_fskt_batched(positions, k_vectors, batch_size=50)
+>>> print(self_intermediate_sf.shape)
 (99,)
 """
     num_batches = int(np.ceil(len(k_vectors) / batch_size))
-    fskt = np.zeros(positions.shape[0] - 1)
+    self_intermediate_sf = np.zeros(positions.shape[0] - 1)
     for i in range(num_batches):
         k_batch = k_vectors[i * batch_size : (i + 1) * batch_size]
-        dr_k = np.dot(positions[1:] - positions[0], k_batch.T)
-        fskt_batch = np.mean(np.cos(dr_k), axis=(1, 2))
-        fskt += fskt_batch * len(k_batch)
-    fskt /= len(k_vectors)
-    return fskt
+        displacement_dot_k = np.dot(positions[1:] - positions[0], k_batch.T)
+        fskt_batch = np.mean(np.cos(displacement_dot_k), axis=(1, 2))
+        self_intermediate_sf += fskt_batch * len(k_batch)
+    self_intermediate_sf /= len(k_vectors)
+    return self_intermediate_sf
 
 def chi_squared(observed, expected, scaling):
     """
@@ -269,8 +269,8 @@ float
 
 Examples
 --------
->>> chi2 = chi_squared(observed, expected, scaling)
->>> print(f"Chi2: {chi2:.2f}")
+>>> chi_squared_value = chi_squared(observed, expected, scaling)
+>>> print(f"Chi2: {chi_squared_value:.2f}")
 """
     return ((observed - expected) ** 2 / scaling).sum()
 
@@ -285,12 +285,12 @@ def oneparam_fit(function, x, y):
     p = popt[0]
 
     yexp = function(x, p)
-    chi2 = chi_squared(y, yexp, yexp)
+    chi_squared_value = chi_squared(y, yexp, yexp)
     dof = len(x) - 1
-    if chi2 <= 0:
+    if chi_squared_value <= 0:
         q = 1.0
     else:
-        q = 1 - gammainc(dof / 2.0, chi2 / 2.0)
+        q = 1 - gammainc(dof / 2.0, chi_squared_value / 2.0)
 
     return p, q
 
@@ -315,42 +315,42 @@ def fit_msd_with_quality_control(t, msd, msd_std, plot=False, title="MSD"):
     msd_max = msd + msd_std
 
     # loop over begin points and compute fit until quality factor >1/2
-    j = -1
-    Q = 0
-    while Q < 1 / 2:
-        j += 1
-        t_selection = log_t[j:]
-        msd_selection = log_msd[j:]
-        _, Q = oneparam_fit(linear, t_selection, msd_selection)
+    start_index = -1
+    quality_factor = 0
+    while quality_factor < 1 / 2:
+        start_index += 1
+        t_selection = log_t[start_index:]
+        msd_selection = log_msd[start_index:]
+        _, quality_factor = oneparam_fit(linear, t_selection, msd_selection)
 
     # perform fitting on linear to obtain D and its bounds
-    D, _ = oneparam_fit(diffusion, t[j:], msd[j:])
-    D_min, _ = oneparam_fit(diffusion, t[j:], msd_min[j:])
-    D_max, _ = oneparam_fit(diffusion, t[j:], msd_max[j:])
+    D, _ = oneparam_fit(diffusion, t[start_index:], msd[start_index:])
+    diffusion_min, _ = oneparam_fit(diffusion, t[start_index:], msd_min[start_index:])
+    diffusion_max, _ = oneparam_fit(diffusion, t[start_index:], msd_max[start_index:])
 
-    D_sigma = (D_max - D_min) / 2
-    D_unc = D_sigma / np.sqrt(len(log_msd) - 1)
+    diffusion_sigma = (diffusion_max - diffusion_min) / 2
+    diffusion_uncertainty = diffusion_sigma / np.sqrt(len(log_msd) - 1)
 
-    return D, D_unc
+    return D, diffusion_uncertainty
 
 
 def fit_line_with_fixed_slope(x, y):
     """
     Fit a straight line to data points by forcing the slope to 1.
-    
+
     Parameters:
     x (array-like): Independent variable data points.
     y (array-like): Dependent variable data points.
-    
+
     Returns:
     float: The y-intercept of the fitted line.
     """
     x = np.array(x)
     y = np.array(y)
-    
+
     # Calculate the y-intercept b
     b = np.mean(y - x)
-    
+
     return b
 
 
@@ -368,12 +368,12 @@ def compute_vacf(velocities):
     vacf : np.ndarray
         Velocity autocorrelation function -> len (traj_length - 1)
     """
-    v0 = velocities[0] 
+    v0 = velocities[0]
     v0_dot = np.sum(v0 * v0)
 
     dot_products = np.einsum('ij,tij->t', v0, velocities)
 
     vacf = dot_products / v0_dot
-    
+
     return vacf
 
