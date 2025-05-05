@@ -132,6 +132,34 @@ def compute_van_hove_correlation(positions, time_log, bins=100, rmax=8.0):
 def get_k_vectors(
     ktarget, box_length, max_points=1000, save_vectors=False,
 ):
+    """
+Generate k-vectors in a periodic box that are close in magnitude to a target wave number.
+
+Parameters
+----------
+ktarget : float
+    The target wave number (magnitude of k-vector).
+box_length : float
+    Length of the cubic simulation box.
+max_points : int, optional
+    Maximum number of k-vectors to return. If more are found, a random subset is used (default is 1000).
+save_vectors : bool, optional
+    If True, saves the resulting k-vectors to 'k_vectors.npy' (default is False).
+
+Returns
+-------
+np.ndarray
+    Array of shape (N, 3) containing the filtered k-vectors.
+
+Examples
+--------
+>>> k_vectors = get_k_vectors(ktarget=5.0, box_length=10.0, max_points=100)
+>>> print(k_vectors.shape)
+(100, 3)
+
+>>> get_k_vectors(ktarget=3.14, box_length=8.0, save_vectors=True)
+# Saves 'k_vectors.npy' to current directory
+"""
     k_step = 2 * np.pi / box_length
     k_discrete = ktarget / k_step
     k_max = int(np.ceil(k_discrete))
@@ -160,6 +188,27 @@ def get_k_vectors(
 
 
 def compute_fskt(positions, k_vectors):
+    """
+Compute the self-intermediate scattering function F_s(k, t).
+
+Parameters
+----------
+positions : np.ndarray
+    Particle positions over time with shape (T, N, 3), where T is number of time frames.
+k_vectors : np.ndarray
+    Array of k-vectors with shape (K, 3).
+
+Returns
+-------
+np.ndarray
+    F_s(k, t) averaged over k-vectors, array of shape (T - 1,).
+
+Examples
+--------
+>>> fskt = compute_fskt(positions, k_vectors)
+>>> print(fskt.shape)
+(99,)
+"""
     dr = positions[1:] - positions[0]
     dr_k = np.dot(dr, k_vectors.T)
     fskt = np.mean(np.cos(dr_k), axis=(1, 2))
@@ -167,6 +216,29 @@ def compute_fskt(positions, k_vectors):
 
 
 def compute_fskt_batched(positions, k_vectors, batch_size=100):
+    """
+Compute the self-intermediate scattering function F_s(k, t) using batched k-vectors.
+
+Parameters
+----------
+positions : np.ndarray
+    Particle positions over time with shape (T, N, 3).
+k_vectors : np.ndarray
+    Array of k-vectors with shape (K, 3).
+batch_size : int, optional
+    Number of k-vectors per batch to reduce memory usage (default is 100).
+
+Returns
+-------
+np.ndarray
+    F_s(k, t) averaged over all k-vectors, array of shape (T - 1,).
+
+Examples
+--------
+>>> fskt = compute_fskt_batched(positions, k_vectors, batch_size=50)
+>>> print(fskt.shape)
+(99,)
+"""
     num_batches = int(np.ceil(len(k_vectors) / batch_size))
     fskt = np.zeros(positions.shape[0] - 1)
     for i in range(num_batches):
@@ -178,6 +250,28 @@ def compute_fskt_batched(positions, k_vectors, batch_size=100):
     return fskt
 
 def chi_squared(observed, expected, scaling):
+    """
+Compute the chi-squared value between observed and expected data.
+
+Parameters
+----------
+observed : np.ndarray
+    Observed data values.
+expected : np.ndarray
+    Expected data values.
+scaling : np.ndarray or float
+    Scaling factors for the denominator in chi-squared formula.
+
+Returns
+-------
+float
+    The chi-squared value.
+
+Examples
+--------
+>>> chi2 = chi_squared(observed, expected, scaling)
+>>> print(f"Chi2: {chi2:.2f}")
+"""
     return ((observed - expected) ** 2 / scaling).sum()
 
 
