@@ -50,7 +50,7 @@
 <li class="toctree-l4 current"><a class="current reference internal" href="#">beadspring.utils package</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="beadspring.html#module-contents">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="beadspring.html#module-beadspring">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -88,14 +88,298 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 </section>
-<section id="beadspring-utils-build-architectures-module">
-<h2>beadspring.utils.build_architectures module<a class="headerlink" href="#beadspring-utils-build-architectures-module" title="Link to this heading"></a></h2>
+<section id="module-beadspring.utils.build_architectures">
+<span id="beadspring-utils-build-architectures-module"></span><h2>beadspring.utils.build_architectures module<a class="headerlink" href="#module-beadspring.utils.build_architectures" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.utils.build_architectures.create_2d_star">
+<span class="sig-prename descclassname"><span class="pre">beadspring.utils.build_architectures.</span></span><span class="sig-name descname"><span class="pre">create_2d_star</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_arms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arm_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/utils/build_architectures.html#create_2d_star"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.utils.build_architectures.create_2d_star" title="Link to this definition"></a></dt>
+<dd><p>Create a 2D star polymer with a given number of arms and arm length.
+The core is a circle with radius R = 0.5.
+The arms are composed of monomers with a bond length of 0.97.
+The charge is zero for all atoms.
+The atom number starts from 1.
+The atom types are 1 for the core and 2 for the rest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_arms</strong> (<em>int</em>) – Number of arms in the star polymer.</p></li>
+<li><p><strong>arm_length</strong> (<em>int</em>) – Number of monomers in each arm.</p></li>
+<li><p><strong>save_file</strong> (<em>str</em>) – File name to save the data file. Default None will save as ‘2d_star.data’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.utils.build_architectures.create_linear_chain">
+<span class="sig-prename descclassname"><span class="pre">beadspring.utils.build_architectures.</span></span><span class="sig-name descname"><span class="pre">create_linear_chain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_of_monomers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bond_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.97</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(-100,</span> <span class="pre">100,</span> <span class="pre">-100,</span> <span class="pre">100,</span> <span class="pre">-100,</span> <span class="pre">100)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masses</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_angles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/utils/build_architectures.html#create_linear_chain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.utils.build_architectures.create_linear_chain" title="Link to this definition"></a></dt>
+<dd><p>Generate a linear polymer chain and write it to a file in either LAMMPS data format or a simple molecule format.</p>
+<section id="parameters">
+<h3>Parameters:<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>filename<span class="classifier">str</span></dt><dd><p>Name of the output file.</p>
+</dd>
+<dt>format<span class="classifier">str, optional</span></dt><dd><p>Output format: ‘data’ for LAMMPS data file format, ‘molecule’ for LAMMPS molecule format (default: ‘data’).</p>
+</dd>
+<dt>no_of_monomers<span class="classifier">int, optional</span></dt><dd><p>Number of monomers in the chain (default: 20).</p>
+</dd>
+<dt>bond_len<span class="classifier">float, optional</span></dt><dd><p>Desired bond length between adjacent monomers (default: 0.97).</p>
+</dd>
+<dt>bounds<span class="classifier">tuple of float, optional</span></dt><dd><p>Simulation box bounds as (xlo, xhi, ylo, yhi, zlo, zhi) (default: (-100, 100, -100, 100, -100, 100)).</p>
+</dd>
+<dt>dmin<span class="classifier">float, optional</span></dt><dd><p>Minimum allowed distance between non-bonded second neighbors to avoid overlaps (default: 1.5).</p>
+</dd>
+<dt>masses<span class="classifier">list of float, optional</span></dt><dd><p>List of atomic masses by type. Only one atom type is supported in the current version (default: [1.0]).</p>
+</dd>
+<dt>with_angles<span class="classifier">bool, optional</span></dt><dd><p>Whether to include angle information (default: True). Ignored for ‘molecule’ format.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">rtype<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
 </section>
-<section id="beadspring-utils-file-utils-module">
-<h2>beadspring.utils.file_utils module<a class="headerlink" href="#beadspring-utils-file-utils-module" title="Link to this heading"></a></h2>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.utils.build_architectures.create_polydisperse_star">
+<span class="sig-prename descclassname"><span class="pre">beadspring.utils.build_architectures.</span></span><span class="sig-name descname"><span class="pre">create_polydisperse_star</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/utils/build_architectures.html#create_polydisperse_star"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.utils.build_architectures.create_polydisperse_star" title="Link to this definition"></a></dt>
+<dd><p>Create a polydisperse star polymer with a given number of arms and arm length.
+The core is a sphere with radius R = 0.5.
+The arms are composed of monomers with a bond length of 0.97.
+The charge is zero for all atoms.
+The function creates a star polymer with f1 arms of length M1 and f2 arms of length M2.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f1</strong> (<em>int</em>) – Number of arms in the star polymer.</p></li>
+<li><p><strong>M1</strong> (<em>int</em>) – Number of monomers in each arm.</p></li>
+<li><p><strong>f2</strong> (<em>int</em>) – Number of arms in the star polymer.</p></li>
+<li><p><strong>M2</strong> (<em>int</em>) – Number of monomers in each arm.</p></li>
+<li><p><strong>save_file</strong> (<em>str</em>) – File name to save the data file. Default None will save as ‘polydisperse_star.data’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.utils.build_architectures.create_polymer_matrix">
+<span class="sig-prename descclassname"><span class="pre">beadspring.utils.build_architectures.</span></span><span class="sig-name descname"><span class="pre">create_polymer_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.97</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/utils/build_architectures.html#create_polymer_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.utils.build_architectures.create_polymer_matrix" title="Link to this definition"></a></dt>
+<dd><p>Create a matrix of polymer chains with a given number of chains and monomers in each chain.
+The core is a sphere with radius R.
+The chains are composed of monomers with a bond length of l.
+The charge is zero for all atoms.
+The atom number starts from 1.
+Atom types are set in a way that when a polymer is embedded in the matrix, the total number
+of atom and bond types is matched.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>int</em>) – Number of stars per side.</p></li>
+<li><p><strong>m</strong> (<em>int</em>) – Number of monomers in each arm. (2*m gives the strand length)</p></li>
+<li><p><strong>R</strong> (<em>float</em>) – Radius of the core. Default is 0.5.</p></li>
+<li><p><strong>l</strong> (<em>float</em>) – Bond length. Default is 0.97.</p></li>
+<li><p><strong>core_mass</strong> (<em>float</em>) – Mass of the core.</p></li>
+<li><p><strong>atom_types</strong> (<em>int</em>) – Number of atom types.</p></li>
+<li><p><strong>bond_types</strong> (<em>int</em>) – Number of bond types.</p></li>
+<li><p><strong>masses</strong> (<em>np.ndarray</em>) – Masses of the atoms.</p></li>
+<li><p><strong>file_name</strong> (<em>str</em>) – File name to save the data file. Default None will save as ‘polymer_matrix.data’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.utils.build_architectures.create_ring">
+<span class="sig-prename descclassname"><span class="pre">beadspring.utils.build_architectures.</span></span><span class="sig-name descname"><span class="pre">create_ring</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_beads</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ring.data'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/utils/build_architectures.html#create_ring"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.utils.build_architectures.create_ring" title="Link to this definition"></a></dt>
+<dd><p>Create a ring polymer with a given number of beads.
+The ring is centered at the origin and the beads are placed on the circumference of a circle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_beads</strong> (<em>int</em>) – Number of beads in the ring polymer.</p></li>
+<li><p><strong>filename</strong> (<em>str</em>) – File name to save the data file. Default is ‘ring.data’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.utils.build_architectures.create_star">
+<span class="sig-prename descclassname"><span class="pre">beadspring.utils.build_architectures.</span></span><span class="sig-name descname"><span class="pre">create_star</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_arms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arm_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">core_radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/utils/build_architectures.html#create_star"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.utils.build_architectures.create_star" title="Link to this definition"></a></dt>
+<dd><p>Create a star polymer with a given number of arms and arm length.
+The core is a sphere with radius R = 0.5.
+The arms are composed of monomers with a bond length of 0.97.
+The charge is zero for all atoms.
+The atom number starts from 1.
+The atom types are 1 for the core and 2 for the rest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_arms</strong> (<em>int</em>) – Number of arms in the star polymer.</p></li>
+<li><p><strong>arm_length</strong> (<em>int</em>) – Number of monomers in each arm.</p></li>
+<li><p><strong>core_radius</strong> (<em>float</em>) – Radius of the core. Default is 0.5.</p></li>
+<li><p><strong>save_file</strong> (<em>str</em>) – File name to save the data file. Default None will save as ‘star.data’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<section id="module-beadspring.utils.file_utils">
+<span id="beadspring-utils-file-utils-module"></span><h2>beadspring.utils.file_utils module<a class="headerlink" href="#module-beadspring.utils.file_utils" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.utils.file_utils.convert_data_to_molecule">
+<span class="sig-prename descclassname"><span class="pre">beadspring.utils.file_utils.</span></span><span class="sig-name descname"><span class="pre">convert_data_to_molecule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/utils/file_utils.html#convert_data_to_molecule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.utils.file_utils.convert_data_to_molecule" title="Link to this definition"></a></dt>
+<dd><p>Convert a LAMMPS data file into a molecule file format.</p>
+<p>The function reads atom and bond data from the input file and writes them
+in the molecule format. This is mainly useful when using the fix bond/react
+command.</p>
+<p>The molecule file format follows the LAMMPS specifications:
+<a class="reference external" href="https://docs.lammps.org/molecule.html">https://docs.lammps.org/molecule.html</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_file</strong> (<em>str</em>) – Name of the input LAMMPS data file.</p></li>
+<li><p><strong>output_file</strong> (<em>str</em>) – Name of the output molecule file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.utils.file_utils.find_latest_file">
+<span class="sig-prename descclassname"><span class="pre">beadspring.utils.file_utils.</span></span><span class="sig-name descname"><span class="pre">find_latest_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/utils/file_utils.html#find_latest_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.utils.file_utils.find_latest_file" title="Link to this definition"></a></dt>
+<dd><p>Find the latest file in a directory where all fiels start with the
+specified string and return the one with the largest suffix.
+This function might be useful to find the latest binary/trajectory
+file in a directory.</p>
+<p>Args:
+- directory: The directory to search in
+- search_string: The string to search for
+Returns:
+- latest_file: The file with the largest value after the search string</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.utils.file_utils.generate_lin_log_timesteps">
+<span class="sig-prename descclassname"><span class="pre">beadspring.utils.file_utils.</span></span><span class="sig-name descname"><span class="pre">generate_lin_log_timesteps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_lin_log_power</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_step</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/utils/file_utils.html#generate_lin_log_timesteps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.utils.file_utils.generate_lin_log_timesteps" title="Link to this definition"></a></dt>
+<dd><p>Generate a sequence of linearly and logarithmically spaced timesteps for LAMMPS simulations.</p>
+<p>Parameters:
+- start_lin_log_power (int): The starting power of 10 after which the logarithmnic spacing starts over.
+- final_step (int): The final simulation step.
+- save_file (bool): Whether to save the generated timesteps to a text file.</p>
+<p>Returns:
+- np.ndarray: An array of timesteps with logarithmic spacing (as in LAMMPS).
+- np.ndarray: An array of special timesteps with a combination of linear and logarithmic spacing.</p>
+<p>Example:
+&gt;&gt;&gt; generate_lin_log_timesteps(7, 5*10**8, save_file=True)
+Creates a logarithmically spaced time steps upto 10^7 and
+then starts over from 10^7+1 upto 5*10^8 restarting the log
+save every 10^7 steps.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.utils.file_utils.setup_freud_box">
+<span class="sig-prename descclassname"><span class="pre">beadspring.utils.file_utils.</span></span><span class="sig-name descname"><span class="pre">setup_freud_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lbox</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dimensions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/utils/file_utils.html#setup_freud_box"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.utils.file_utils.setup_freud_box" title="Link to this definition"></a></dt>
+<dd><p>Set up a freud box from the box lengths.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lbox</strong> (<em>float</em>) – The box length.</p></li>
+<li><p><strong>dimensions</strong> (<em>int</em><em> (</em><em>optional</em><em>)</em>) – The number of dimensions. Default is 3.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>box</strong> – The freud box object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>freud.box.Box</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lbox</span> <span class="o">=</span> <span class="mf">10.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">box</span> <span class="o">=</span> <span class="n">setup_freud_box</span><span class="p">(</span><span class="n">lbox</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.utils.file_utils.setup_universe">
+<span class="sig-prename descclassname"><span class="pre">beadspring.utils.file_utils.</span></span><span class="sig-name descname"><span class="pre">setup_universe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">topology_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trajectory_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.005</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/utils/file_utils.html#setup_universe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.utils.file_utils.setup_universe" title="Link to this definition"></a></dt>
+<dd><p>Set up an MDAnalysis universe by loading the topology and trajectory files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>topology_file</strong> (<em>str</em>) – The path to the topology file. Usually a .data file.</p></li>
+<li><p><strong>trajectory_file</strong> (<em>str</em>) – The path to the trajectory file. Usually a .dat file.</p></li>
+<li><p><strong>dt</strong> (<em>float</em><em> (</em><em>optional</em><em>)</em>) – The time step of the simulation. Default is 0.005.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>universe</strong> – The MDAnalysis universe</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>MDAnalysis.Universe</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">topology_file</span> <span class="o">=</span> <span class="s1">&#39;topo.data&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">trajectory_file</span> <span class="o">=</span> <span class="s1">&#39;traj.dat&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u</span> <span class="o">=</span> <span class="n">setup_universe</span><span class="p">(</span><span class="n">topology_file</span><span class="p">,</span> <span class="n">trajectory_file</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.005</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.utils.file_utils.wrap_coordinates">
+<span class="sig-prename descclassname"><span class="pre">beadspring.utils.file_utils.</span></span><span class="sig-name descname"><span class="pre">wrap_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/utils/file_utils.html#wrap_coordinates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.utils.file_utils.wrap_coordinates" title="Link to this definition"></a></dt>
+<dd><p>Wrap the coordinates using the freud box object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>positions</strong> (<em>np.ndarray</em>) – The positions of the atoms/molecules.</p></li>
+<li><p><strong>box</strong> (<em>freud.box.Box</em>) – The freud box object.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>wrapped_positions</strong> – The wrapped positions of the universe.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">u</span> <span class="o">=</span> <span class="n">setup_universe</span><span class="p">(</span><span class="s1">&#39;topo.data&#39;</span><span class="p">,</span> <span class="s1">&#39;traj.dat&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">positions</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">positions</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">box</span> <span class="o">=</span> <span class="n">freud</span><span class="o">.</span><span class="n">box</span><span class="o">.</span><span class="n">Box</span><span class="o">.</span><span class="n">cube</span><span class="p">(</span><span class="mf">10.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wrapped_positions</span> <span class="o">=</span> <span class="n">wrap_coordinates</span><span class="p">(</span><span class="n">positions</span><span class="p">,</span> <span class="n">box</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="module-beadspring.utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-beadspring.utils" title="Link to this heading"></a></h2>
 </section>
 </section>
 

@@ -51,7 +51,7 @@
 <li class="toctree-l4"><a class="reference internal" href="beadspring.utils.html">beadspring.utils package</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="beadspring.html#module-contents">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="beadspring.html#module-beadspring">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -89,17 +89,692 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 </section>
-<section id="beadspring-analysis-dynamical-properties-module">
-<h2>beadspring.analysis.dynamical_properties module<a class="headerlink" href="#beadspring-analysis-dynamical-properties-module" title="Link to this heading"></a></h2>
+<section id="module-beadspring.analysis.dynamical_properties">
+<span id="beadspring-analysis-dynamical-properties-module"></span><h2>beadspring.analysis.dynamical_properties module<a class="headerlink" href="#module-beadspring.analysis.dynamical_properties" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.dynamical_properties.chi_squared">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.dynamical_properties.</span></span><span class="sig-name descname"><span class="pre">chi_squared</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaling</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/dynamical_properties.html#chi_squared"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.dynamical_properties.chi_squared" title="Link to this definition"></a></dt>
+<dd><p>Compute the chi-squared value between observed and expected data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>observed</strong> (<em>np.ndarray</em>) – Observed data values.</p></li>
+<li><p><strong>expected</strong> (<em>np.ndarray</em>) – Expected data values.</p></li>
+<li><p><strong>scaling</strong> (<em>np.ndarray</em><em> or </em><em>float</em>) – Scaling factors for the denominator in chi-squared formula.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The chi-squared value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">chi2</span> <span class="o">=</span> <span class="n">chi_squared</span><span class="p">(</span><span class="n">observed</span><span class="p">,</span> <span class="n">expected</span><span class="p">,</span> <span class="n">scaling</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Chi2: </span><span class="si">{</span><span class="n">chi2</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.dynamical_properties.compute_debye_waller_factor">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.dynamical_properties.</span></span><span class="sig-name descname"><span class="pre">compute_debye_waller_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_log</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau_p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/dynamical_properties.html#compute_debye_waller_factor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.dynamical_properties.compute_debye_waller_factor" title="Link to this definition"></a></dt>
+<dd><p>Computes the Debye-Wallar factor from the mean squared displacement.
+The choice of time scale is set to be at 3 tau by default.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time_log</strong> (<em>np.ndarray</em>) – Logarithmically saved simulation times.</p></li>
+<li><p><strong>msd</strong> (<em>np.ndarray</em>) – Mean squared displacement computed from
+logarithmically saved trajectories.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>dwf</strong> – Mean squared displacement evaluated at 3 tau</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.dynamical_properties.compute_fskt">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.dynamical_properties.</span></span><span class="sig-name descname"><span class="pre">compute_fskt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_vectors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/dynamical_properties.html#compute_fskt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.dynamical_properties.compute_fskt" title="Link to this definition"></a></dt>
+<dd><p>Compute the self-intermediate scattering function F_s(k, t).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>positions</strong> (<em>np.ndarray</em>) – Particle positions over time with shape (T, N, 3), where T is number of time frames.</p></li>
+<li><p><strong>k_vectors</strong> (<em>np.ndarray</em>) – Array of k-vectors with shape (K, 3).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>F_s(k, t) averaged over k-vectors, array of shape (T - 1,).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fskt</span> <span class="o">=</span> <span class="n">compute_fskt</span><span class="p">(</span><span class="n">positions</span><span class="p">,</span> <span class="n">k_vectors</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">fskt</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="go">(99,)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.dynamical_properties.compute_fskt_batched">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.dynamical_properties.</span></span><span class="sig-name descname"><span class="pre">compute_fskt_batched</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_vectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/dynamical_properties.html#compute_fskt_batched"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.dynamical_properties.compute_fskt_batched" title="Link to this definition"></a></dt>
+<dd><p>Compute the self-intermediate scattering function F_s(k, t) using batched k-vectors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>positions</strong> (<em>np.ndarray</em>) – Particle positions over time with shape (T, N, 3).</p></li>
+<li><p><strong>k_vectors</strong> (<em>np.ndarray</em>) – Array of k-vectors with shape (K, 3).</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of k-vectors per batch to reduce memory usage (default is 100).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>F_s(k, t) averaged over all k-vectors, array of shape (T - 1,).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fskt</span> <span class="o">=</span> <span class="n">compute_fskt_batched</span><span class="p">(</span><span class="n">positions</span><span class="p">,</span> <span class="n">k_vectors</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">fskt</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="go">(99,)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.dynamical_properties.compute_msd">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.dynamical_properties.</span></span><span class="sig-name descname"><span class="pre">compute_msd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">per_particle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/dynamical_properties.html#compute_msd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.dynamical_properties.compute_msd" title="Link to this definition"></a></dt>
+<dd><p>Computes the mean squared displacement and the mean squared displacement per particle
+for a given trajectory. Note that you have to provide unwrapped coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>positions</strong> (<em>np.ndarray</em>) – trajectory array with the shape (traj_length, N, 3)</p></li>
+<li><p><strong>per_particle</strong> (<em>bool</em>) – If True, returns the mean squared displacement per particle.
+Default is False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>msd</strong> (<em>np.ndarray</em>) – Mean squared displacement -&gt; len (traj_length)</p></li>
+<li><p><strong>msd_pp</strong> (<em>np.ndarray</em>) – MSD per particle -&gt; shape(traj_length, N)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.dynamical_properties.compute_ngp">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.dynamical_properties.</span></span><span class="sig-name descname"><span class="pre">compute_ngp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/dynamical_properties.html#compute_ngp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.dynamical_properties.compute_ngp" title="Link to this definition"></a></dt>
+<dd><p>Computes the non-Gaussian parameter for a given trajectory.
+Note that you have to provide unwrapped coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>positions</strong> (<em>np.ndarray</em>) – trajectory array with the shape (traj_length, N, 3)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ngp</strong> – Non-Gaussian parameter -&gt; len (traj_length)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.dynamical_properties.compute_vacf">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.dynamical_properties.</span></span><span class="sig-name descname"><span class="pre">compute_vacf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">velocities</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/dynamical_properties.html#compute_vacf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.dynamical_properties.compute_vacf" title="Link to this definition"></a></dt>
+<dd><p>Computes the velocity autocorrelation function for a given trajectory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>velocities</strong> (<em>np.ndarray</em>) – trajectory array with the shape (traj_length, N, 3)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>vacf</strong> – Velocity autocorrelation function -&gt; len (traj_length - 1)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.dynamical_properties.compute_van_hove_correlation">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.dynamical_properties.</span></span><span class="sig-name descname"><span class="pre">compute_van_hove_correlation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_log</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/dynamical_properties.html#compute_van_hove_correlation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.dynamical_properties.compute_van_hove_correlation" title="Link to this definition"></a></dt>
+<dd><p>Computes the Van Hove correlation function for a given trajectory.
+Note that you have to provide unwrapped coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>positions</strong> (<em>np.ndarray</em>) – trajectory array with the shape (traj_length, N, 3)</p></li>
+<li><p><strong>time_log</strong> (<em>np.ndarray</em>) – Logarithmically saved simulation times.</p></li>
+<li><p><strong>bins</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of bins for the histogram. The default is 100.</p></li>
+<li><p><strong>rmax</strong> (<em>float</em><em>, </em><em>optional</em>) – Maximum distance for the histogram. The default is 8.0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>r</strong> (<em>np.ndarray</em>) – Grid points of the Van Hove correlation function.</p></li>
+<li><p><strong>g_r</strong> (<em>np.ndarray</em>) – The Van Hove correlation function.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.dynamical_properties.fit_line_with_fixed_slope">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.dynamical_properties.</span></span><span class="sig-name descname"><span class="pre">fit_line_with_fixed_slope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/dynamical_properties.html#fit_line_with_fixed_slope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.dynamical_properties.fit_line_with_fixed_slope" title="Link to this definition"></a></dt>
+<dd><p>Fit a straight line to data points by forcing the slope to 1.</p>
+<p>Parameters:
+x (array-like): Independent variable data points.
+y (array-like): Dependent variable data points.</p>
+<p>Returns:
+float: The y-intercept of the fitted line.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.dynamical_properties.fit_msd_with_quality_control">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.dynamical_properties.</span></span><span class="sig-name descname"><span class="pre">fit_msd_with_quality_control</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msd_std</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MSD'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/dynamical_properties.html#fit_msd_with_quality_control"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.dynamical_properties.fit_msd_with_quality_control" title="Link to this definition"></a></dt>
+<dd><p>Increases begin point of fitting (time_log, msd) until quality factor
+is above a 1/2. Returns 3D diffusion coefficient and its uncertainty</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.dynamical_properties.get_k_vectors">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.dynamical_properties.</span></span><span class="sig-name descname"><span class="pre">get_k_vectors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ktarget</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_vectors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/dynamical_properties.html#get_k_vectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.dynamical_properties.get_k_vectors" title="Link to this definition"></a></dt>
+<dd><p>Generate k-vectors in a periodic box that are close in magnitude to a target wave number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ktarget</strong> (<em>float</em>) – The target wave number (magnitude of k-vector).</p></li>
+<li><p><strong>box_length</strong> (<em>float</em>) – Length of the cubic simulation box.</p></li>
+<li><p><strong>max_points</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of k-vectors to return. If more are found, a random subset is used (default is 1000).</p></li>
+<li><p><strong>save_vectors</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, saves the resulting k-vectors to ‘k_vectors.npy’ (default is False).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Array of shape (N, 3) containing the filtered k-vectors.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">k_vectors</span> <span class="o">=</span> <span class="n">get_k_vectors</span><span class="p">(</span><span class="n">ktarget</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">box_length</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">k_vectors</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="go">(100, 3)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_k_vectors</span><span class="p">(</span><span class="n">ktarget</span><span class="o">=</span><span class="mf">3.14</span><span class="p">,</span> <span class="n">box_length</span><span class="o">=</span><span class="mf">8.0</span><span class="p">,</span> <span class="n">save_vectors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go"># Saves &#39;k_vectors.npy&#39; to current directory</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.dynamical_properties.oneparam_fit">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.dynamical_properties.</span></span><span class="sig-name descname"><span class="pre">oneparam_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/dynamical_properties.html#oneparam_fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.dynamical_properties.oneparam_fit" title="Link to this definition"></a></dt>
+<dd><p>Performs a fit on (x, y) as the specified function with one fit parameter
+Returns fitted parameter and quality factor q</p>
+</dd></dl>
+
 </section>
-<section id="beadspring-analysis-polymer-properties-module">
-<h2>beadspring.analysis.polymer_properties module<a class="headerlink" href="#beadspring-analysis-polymer-properties-module" title="Link to this heading"></a></h2>
+<section id="module-beadspring.analysis.polymer_properties">
+<span id="beadspring-analysis-polymer-properties-module"></span><h2>beadspring.analysis.polymer_properties module<a class="headerlink" href="#module-beadspring.analysis.polymer_properties" title="Link to this heading"></a></h2>
+<p>Documentation about the beadspring module.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.polymer_properties.calculate_acylindricity">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.polymer_properties.</span></span><span class="sig-name descname"><span class="pre">calculate_acylindricity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lmid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/polymer_properties.html#calculate_acylindricity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.polymer_properties.calculate_acylindricity" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lmin</strong> (<em>float</em>) – Eigenvalues of the gyration tensor</p></li>
+<li><p><strong>lmid</strong> (<em>float</em>) – Eigenvalues of the gyration tensor</p></li>
+<li><p><strong>lmax</strong> (<em>float</em>) – Eigenvalues of the gyration tensor</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>c</strong> – Acylindricity parameter for polymer chains. c=0
+corresponds to a perfect cylinder.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.polymer_properties.calculate_asphericity">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.polymer_properties.</span></span><span class="sig-name descname"><span class="pre">calculate_asphericity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lmid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lmax</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/polymer_properties.html#calculate_asphericity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.polymer_properties.calculate_asphericity" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lmin</strong> (<em>float</em>) – Eigenvalues of the gyration tensor</p></li>
+<li><p><strong>lmid</strong> (<em>float</em>) – Eigenvalues of the gyration tensor</p></li>
+<li><p><strong>lmax</strong> (<em>float</em>) – Eigenvalues of the gyration tensor</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>b</strong> – Asphericity parameter for polymer chains. b=0
+corresponds to a perfect sphere</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.polymer_properties.calculate_end_to_end_correlation">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.polymer_properties.</span></span><span class="sig-name descname"><span class="pre">calculate_end_to_end_correlation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">end_to_end_vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/polymer_properties.html#calculate_end_to_end_correlation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.polymer_properties.calculate_end_to_end_correlation" title="Link to this definition"></a></dt>
+<dd><p>This function computes the auto correlation of the end to end vector</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Ree</strong> (<em>np.ndarray</em>) – end to end distance vector with shape (len(frames), N_chains, 3)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>correlations</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.polymer_properties.calculate_end_to_end_correlation_optimised">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.polymer_properties.</span></span><span class="sig-name descname"><span class="pre">calculate_end_to_end_correlation_optimised</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">end_to_end_vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/polymer_properties.html#calculate_end_to_end_correlation_optimised"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.polymer_properties.calculate_end_to_end_correlation_optimised" title="Link to this definition"></a></dt>
+<dd><p>Optimized function to compute the auto correlation of the end to end vector using NumPy vectorisation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>end_to_end_vector</strong> (<em>np.ndarray</em>) – End to end distance vector with shape (len(frames), N_chains, 3)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>correlations</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.polymer_properties.calculate_hydrodynamic_radius">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.polymer_properties.</span></span><span class="sig-name descname"><span class="pre">calculate_hydrodynamic_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/polymer_properties.html#calculate_hydrodynamic_radius"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.polymer_properties.calculate_hydrodynamic_radius" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>positions</strong> (<em>np.ndarray</em>) – (N, 3) shaped array containing the positions of particles</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>hydrodynamic_radius</strong> – Hydrodynamic radius of the polymer chain</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.polymer_properties.calculate_prolateness">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.polymer_properties.</span></span><span class="sig-name descname"><span class="pre">calculate_prolateness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lmid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lmax</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/polymer_properties.html#calculate_prolateness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.polymer_properties.calculate_prolateness" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lmin</strong> (<em>float</em>) – Eigenvalues of the gyration tensor</p></li>
+<li><p><strong>lmid</strong> (<em>float</em>) – Eigenvalues of the gyration tensor</p></li>
+<li><p><strong>lmax</strong> (<em>float</em>) – Eigenvalues of the gyration tensor</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>p</strong> – p=-1 for perfectly oblate shape and p=1 for perfectly prolate shape</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.polymer_properties.calculate_rg2">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.polymer_properties.</span></span><span class="sig-name descname"><span class="pre">calculate_rg2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lmid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lmax</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/polymer_properties.html#calculate_rg2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.polymer_properties.calculate_rg2" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lmin</strong> (<em>float</em>) – Eigenvalues of the gyration tensor</p></li>
+<li><p><strong>lmid</strong> (<em>float</em>) – Eigenvalues of the gyration tensor</p></li>
+<li><p><strong>lmax</strong> (<em>float</em>) – Eigenvalues of the gyration tensor</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>rg2</strong> – Radius of gyration squared for polymer chains.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.polymer_properties.calculate_shape_anisotropy">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.polymer_properties.</span></span><span class="sig-name descname"><span class="pre">calculate_shape_anisotropy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lmid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lmax</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/polymer_properties.html#calculate_shape_anisotropy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.polymer_properties.calculate_shape_anisotropy" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lmin</strong> (<em>float</em>) – Eigenvalues of the gyration tensor</p></li>
+<li><p><strong>lmid</strong> (<em>float</em>) – Eigenvalues of the gyration tensor</p></li>
+<li><p><strong>lmax</strong> (<em>float</em>) – Eigenvalues of the gyration tensor</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>k2</strong> – Relative shape anisotropy parameter for polymer chains.
+k2=1 for an ideal linear chain, k2=0 for highly symmetric
+conformations. 0 &lt; k2 &lt; 1</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.polymer_properties.compute_bond_lengths">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.polymer_properties.</span></span><span class="sig-name descname"><span class="pre">compute_bond_lengths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atom_group</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/polymer_properties.html#compute_bond_lengths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.polymer_properties.compute_bond_lengths" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>atom_group</strong> (<em>&lt;AtomGroup&gt; object</em>) – AtomGroup object containing the bond information</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>bond_length</strong> – Array containing the bond lengths for all bonds in the system</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.polymer_properties.compute_gyration_tensor">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.polymer_properties.</span></span><span class="sig-name descname"><span class="pre">compute_gyration_tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/polymer_properties.html#compute_gyration_tensor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.polymer_properties.compute_gyration_tensor" title="Link to this definition"></a></dt>
+<dd><p>Calculates the gyration tensor for a given set of positions
+in a single time frame</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>positions</strong> (<em>np.ndarray</em>) – (N, 3) shaped array containing the positions of particles</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>gyration tensor</strong> (<em>np.ndarray</em>) – (3, 3) shaped array of gyration tensor</p></li>
+<li><p><strong>eigenvalues</strong> (<em>np.ndarray</em>) – array of length 3 sorted in the ascending order</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.polymer_properties.compute_p2">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.polymer_properties.</span></span><span class="sig-name descname"><span class="pre">compute_p2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">universe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([1,</span> <span class="pre">0,</span> <span class="pre">0])</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/polymer_properties.html#compute_p2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.polymer_properties.compute_p2" title="Link to this definition"></a></dt>
+<dd><p>Compute the P2 parameter for a polymer chain using bond orientations from an MDAnalysis Universe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>universe</strong> (<em>MDAnalysis.Universe</em>) – The MDAnalysis Universe containing the polymer chain.</p></li>
+<li><p><strong>reference_axis</strong> (<em>numpy.ndarray</em>) – The reference direction vector (default is x-axis).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The P2 parameter of the bonds.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.polymer_properties.compute_p2_from_vectors">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.polymer_properties.</span></span><span class="sig-name descname"><span class="pre">compute_p2_from_vectors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bond_vectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([1,</span> <span class="pre">0,</span> <span class="pre">0])</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/polymer_properties.html#compute_p2_from_vectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.polymer_properties.compute_p2_from_vectors" title="Link to this definition"></a></dt>
+<dd><p>Compute the P2 parameter for a polymer chain from bond vectors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bond_vectors</strong> (<em>numpy.ndarray</em>) – Array of bond vectors (N, 3).</p></li>
+<li><p><strong>reference_axis</strong> (<em>numpy.ndarray</em>) – The reference direction vector (default is x-axis).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The P2 parameter of the bonds.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.polymer_properties.identify_end_to_end_vector">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.polymer_properties.</span></span><span class="sig-name descname"><span class="pre">identify_end_to_end_vector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atom_groups_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/polymer_properties.html#identify_end_to_end_vector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.polymer_properties.identify_end_to_end_vector" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>atoms_group_list</strong> (<em>list</em>) – List of &lt;AtomGroup&gt; objects. It can be all backbones in a given system,
+or all chains over which we want to compute the end to end vector</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>end_to_end_vector</strong> – (N, 3) shaped array containing the end-to-end vector for each polymer chain</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="beadspring-analysis-structural-properties-module">
-<h2>beadspring.analysis.structural_properties module<a class="headerlink" href="#beadspring-analysis-structural-properties-module" title="Link to this heading"></a></h2>
+<section id="module-beadspring.analysis.structural_properties">
+<span id="beadspring-analysis-structural-properties-module"></span><h2>beadspring.analysis.structural_properties module<a class="headerlink" href="#module-beadspring.analysis.structural_properties" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.structural_properties.bounding_sphere">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.structural_properties.</span></span><span class="sig-name descname"><span class="pre">bounding_sphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/structural_properties.html#bounding_sphere"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.structural_properties.bounding_sphere" title="Link to this definition"></a></dt>
+<dd><p>Computes the bounding sphere of a set of points in 3D space</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>positions</strong> (<em>np.ndarray</em>) – (N, 3) shaped array containing the positions of particles</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>radius</strong> (<em>float</em>) – Radius of the bounding sphere</p></li>
+<li><p><strong>centre</strong> (<em>np.ndarray</em>) – (3,) shaped array containing the center of the bounding sphere</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.structural_properties.compute_linear_density">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.structural_properties.</span></span><span class="sig-name descname"><span class="pre">compute_linear_density</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atomgroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trajectory_slice</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'y'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/structural_properties.html#compute_linear_density"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.structural_properties.compute_linear_density" title="Link to this definition"></a></dt>
+<dd><p>Compute the linear mass density of an atom group over a trajectory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atomgroup</strong> – MDAnalysis AtomGroup
+The group of atoms to analyze.</p></li>
+<li><p><strong>trajectory_slice</strong> – iterable
+A slice or iterable of trajectory frames.</p></li>
+<li><p><strong>axis</strong> – str
+Axis along which to calculate density (‘x’, ‘y’, or ‘z’).</p></li>
+<li><p><strong>binsize</strong> – float
+Bin width for the density calculation.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Returns: np.ndarray</dt><dd><p>2D array of linear mass density per frame with the shape (num_frames, num_bins)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.structural_properties.compute_rdf">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.structural_properties.</span></span><span class="sig-name descname"><span class="pre">compute_rdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/structural_properties.html#compute_rdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.structural_properties.compute_rdf" title="Link to this definition"></a></dt>
+<dd><p>Computes the radial distribution function (RDF)
+at a given frame</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>positions</strong> (<em>np.ndarray</em>) – Positions of particles with the shape (N, 3)</p></li>
+<li><p><strong>box</strong> (<em>freud.box.Box</em>) – freud box item ([Lx, Ly, Lz])</p></li>
+<li><p><strong>r_max</strong> (<em>float</em>) – Maximum distance to compute the RDF</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>rdf.bin_centers</strong> (<em>np.ndarray</em>) – bins of radial distribution function (# of bins is 50)</p></li>
+<li><p><strong>rdf.rdf</strong> (<em>np.ndarray</em>) – radial distribution function</p></li>
+<li><p><strong>r_min</strong> (<em>float</em>) – value of r for which g(r) attains its minimum</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.structural_properties.compute_rdf_pair_freud">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.structural_properties.</span></span><span class="sig-name descname"><span class="pre">compute_rdf_pair_freud</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type1_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type2_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nbins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/structural_properties.html#compute_rdf_pair_freud"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.structural_properties.compute_rdf_pair_freud" title="Link to this definition"></a></dt>
+<dd><p>Computes the radial distribution function (RDF) between two groups of particles
+using the freud library (much faster than the MDA implementation)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>type1_positions</strong> (<em>np.ndarray</em>) – Positions of group A particles with the shape (N, 3)</p></li>
+<li><p><strong>type2_positions</strong> (<em>np.ndarray</em>) – Positions of group B particles with the shape (M, 3)</p></li>
+<li><p><strong>box</strong> (<em>freud.box.Box</em>) – freud box item ([Lx, Ly, Lz])</p></li>
+<li><p><strong>r_max</strong> (<em>float</em><em>, </em><em>optional</em>) – Maximum distance to compute the RDF. The default is 6.0.</p></li>
+<li><p><strong>bins</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of bins for the histogram. The default is 50.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>rdf_bin_centres</strong> (<em>np.ndarray</em>) – bins of radial distribution function</p></li>
+<li><p><strong>rdf_ab_vals</strong> (<em>np.ndarray</em>) – radial distribution function</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.structural_properties.compute_rdf_pair_mda">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.structural_properties.</span></span><span class="sig-name descname"><span class="pre">compute_rdf_pair_mda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ag1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ag2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nbins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">75</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/structural_properties.html#compute_rdf_pair_mda"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.structural_properties.compute_rdf_pair_mda" title="Link to this definition"></a></dt>
+<dd><p>Computes the averaged radial distribution function (RDF)
+between two groups of atoms. From MDAnalysis documentation:
+The RDF effectively counts the average number of ag2
+neighbours in a shell at distance r around a ag1 particle
+and represents it as a density.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ag1</strong> (<em>First AtomGroup 1</em><em>, </em><em>can be from u.select_atoms</em><em>(</em><em>)</em>) – ag1 = u.select_atoms(‘type 1’)</p></li>
+<li><p><strong>ag2</strong> (<em>Second AtomGroup</em><em>, </em><em>similar to ag1</em>)</p></li>
+<li><p><strong>nbins</strong> (<em>Number</em><em> of </em><em>bins in the histogram</em>)</p></li>
+<li><p><strong>r_max</strong> (<em>float</em>) – Maximum distance to compute the RDF</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>rdf.bin_centers</strong> (<em>np.ndarray</em>) – bins of radial distribution function (# of bins is 200)</p></li>
+<li><p><strong>rdf.rdf</strong> (<em>np.ndarray</em>) – radial distribution function</p></li>
+<li><p><strong>r_min</strong> (<em>float</em>) – value of r for which g(r) attains its minimum</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.structural_properties.compute_structure_factor_fourier">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.structural_properties.</span></span><span class="sig-name descname"><span class="pre">compute_structure_factor_fourier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positions_type1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positions_type2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_bins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desired_dx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/structural_properties.html#compute_structure_factor_fourier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.structural_properties.compute_structure_factor_fourier" title="Link to this definition"></a></dt>
+<dd><p>Compute the static structure factor S(k) and partial structure factors using FFT methods.
+Performs binning and returns binned k-values and S(k) values suitable for plotting.</p>
+<p>Parameters:
+positions_type1: numpy array of shape (N1, 3) - positions of particles of type 1
+positions_type2: numpy array of shape (N2, 3) - positions of particles of type 2
+box_size: float - size of the simulation box (assumed cubic)
+k_min: float - minimum k magnitude to compute
+k_max: float - maximum k magnitude to compute
+num_bins: int - number of bins for k
+grid_size: int (optional) - number of grid points along each axis (overrides desired_dx if provided)
+desired_dx: float (optional) - desired grid spacing in real space (used to calculate grid_size if grid_size not provided)</p>
+<p>Returns:
+k_bin_centers: numpy array - bin centers for k
+S_total_binned: numpy array - binned total static structure factor values
+S_AA_binned: numpy array - binned partial structure factor S_AA(k)
+S_AB_binned: numpy array - binned partial structure factor S_AB(k)
+S_BB_binned: numpy array - binned partial structure factor S_BB(k)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.structural_properties.compute_structure_factor_freud">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.structural_properties.</span></span><span class="sig-name descname"><span class="pre">compute_structure_factor_freud</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/structural_properties.html#compute_structure_factor_freud"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.structural_properties.compute_structure_factor_freud" title="Link to this definition"></a></dt>
+<dd><p>Computes the static structure factor for a given trajectory
+using the freud library (much faster than the previous implementation)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>box</strong> (<em>list</em>) – freud box item ([Lx, Ly, Lz])</p></li>
+<li><p><strong>positions</strong> (<em>np.ndarray</em>) – trajectory array with the shape (traj_length, N, 3)</p></li>
+<li><p><strong>kmin</strong> (<em>float</em><em>, </em><em>optional</em>) – Starting point of S(k) grid. The default is 0.0.</p></li>
+<li><p><strong>kmax</strong> (<em>float</em><em>, </em><em>optional</em>) – End point of S(k) grid. The default is 8.0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>np.ndarray</em> – Grid points of the static structure factor.</p></li>
+<li><p><em>np.ndarray</em> – The static structure factor.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="beadspring.analysis.structural_properties.contacts_within_cutoff">
+<span class="sig-prename descclassname"><span class="pre">beadspring.analysis.structural_properties.</span></span><span class="sig-name descname"><span class="pre">contacts_within_cutoff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type1_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type2_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/beadspring/analysis/structural_properties.html#contacts_within_cutoff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#beadspring.analysis.structural_properties.contacts_within_cutoff" title="Link to this definition"></a></dt>
+<dd><p>Computes the number of contacts between two groups of particles
+within a given cutoff distance using the freud library</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>type1_positions</strong> (<em>np.ndarray</em>) – Positions of group A particles with the shape (N, 3)</p></li>
+<li><p><strong>type2_positions</strong> (<em>np.ndarray</em>) – Positions of group B particles with the shape (M, 3)</p></li>
+<li><p><strong>box</strong> (<em>freud.box.Box</em>) – freud box item ([Lx, Ly, Lz])</p></li>
+<li><p><strong>radius</strong> (<em>float</em><em>, </em><em>optional</em>) – Cutoff distance for the contact calculation. The default is 2.5.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>n_contacts</strong> – Number of contacts between the two groups of particles</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<section id="module-beadspring.analysis">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-beadspring.analysis" title="Link to this heading"></a></h2>
 </section>
 </section>
 

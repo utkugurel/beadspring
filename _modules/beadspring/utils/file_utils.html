@@ -1,0 +1,385 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>beadspring.utils.file_utils &mdash; Bead Spring Analytics 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Bead Spring Analytics
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">beadspring</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Bead Spring Analytics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">beadspring.utils.file_utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for beadspring.utils.file_utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">MDAnalysis</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mda</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">freud</span>
+
+<div class="viewcode-block" id="setup_universe">
+<a class="viewcode-back" href="../../../beadspring.utils.html#beadspring.utils.file_utils.setup_universe">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">setup_universe</span><span class="p">(</span><span class="n">topology_file</span><span class="p">,</span> <span class="n">trajectory_file</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.005</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set up an MDAnalysis universe by loading the topology and trajectory files.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    topology_file : str</span>
+<span class="sd">        The path to the topology file. Usually a .data file.</span>
+<span class="sd">    trajectory_file : str</span>
+<span class="sd">        The path to the trajectory file. Usually a .dat file.</span>
+<span class="sd">    dt : float (optional)</span>
+<span class="sd">        The time step of the simulation. Default is 0.005.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    universe : MDAnalysis.Universe</span>
+<span class="sd">        The MDAnalysis universe</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; topology_file = &#39;topo.data&#39;</span>
+<span class="sd">    &gt;&gt;&gt; trajectory_file = &#39;traj.dat&#39;</span>
+<span class="sd">    &gt;&gt;&gt; u = setup_universe(topology_file, trajectory_file, dt=0.005)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">universe</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="n">topology_file</span><span class="p">,</span> <span class="n">trajectory_file</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;LAMMPSDUMP&#39;</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">universe</span></div>
+
+
+
+<div class="viewcode-block" id="setup_freud_box">
+<a class="viewcode-back" href="../../../beadspring.utils.html#beadspring.utils.file_utils.setup_freud_box">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">setup_freud_box</span><span class="p">(</span><span class="n">lbox</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set up a freud box from the box lengths.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lbox : float</span>
+<span class="sd">        The box length.</span>
+<span class="sd">    dimensions : int (optional)</span>
+<span class="sd">        The number of dimensions. Default is 3.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    box : freud.box.Box</span>
+<span class="sd">        The freud box object.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; lbox = 10.0</span>
+<span class="sd">    &gt;&gt;&gt; box = setup_freud_box(lbox, dimensions=3)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">dimensions</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">box</span> <span class="o">=</span> <span class="n">freud</span><span class="o">.</span><span class="n">box</span><span class="o">.</span><span class="n">Box</span><span class="p">(</span><span class="n">lbox</span><span class="p">,</span> <span class="n">lbox</span><span class="p">,</span> <span class="n">lbox</span><span class="p">,</span> <span class="n">is2D</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">dimensions</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">box</span> <span class="o">=</span> <span class="n">freud</span><span class="o">.</span><span class="n">box</span><span class="o">.</span><span class="n">Box</span><span class="p">(</span><span class="n">lbox</span><span class="p">,</span> <span class="n">lbox</span><span class="p">,</span> <span class="n">is2D</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only 2D and 3D boxes are supported.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">box</span></div>
+
+
+
+<div class="viewcode-block" id="wrap_coordinates">
+<a class="viewcode-back" href="../../../beadspring.utils.html#beadspring.utils.file_utils.wrap_coordinates">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">wrap_coordinates</span><span class="p">(</span><span class="n">positions</span><span class="p">,</span> <span class="n">box</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wrap the coordinates using the freud box object.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    positions : np.ndarray</span>
+<span class="sd">        The positions of the atoms/molecules.</span>
+<span class="sd">    box : freud.box.Box</span>
+<span class="sd">        The freud box object.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    wrapped_positions : np.ndarray</span>
+<span class="sd">        The wrapped positions of the universe.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; u = setup_universe(&#39;topo.data&#39;, &#39;traj.dat&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; positions = u.atoms.positions()</span>
+<span class="sd">    &gt;&gt;&gt; box = freud.box.Box.cube(10.0)</span>
+<span class="sd">    &gt;&gt;&gt; wrapped_positions = wrap_coordinates(positions, box)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">unwrapped_coordinates</span> <span class="o">=</span> <span class="n">positions</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">wrapped_coordinates</span> <span class="o">=</span> <span class="n">box</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">unwrapped_coordinates</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wrapped_coordinates</span></div>
+
+
+
+<div class="viewcode-block" id="find_latest_file">
+<a class="viewcode-back" href="../../../beadspring.utils.html#beadspring.utils.file_utils.find_latest_file">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_latest_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">search_string</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find the latest file in a directory where all fiels start with the</span>
+<span class="sd">    specified string and return the one with the largest suffix.</span>
+<span class="sd">    This function might be useful to find the latest binary/trajectory</span>
+<span class="sd">    file in a directory.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    - directory: The directory to search in</span>
+<span class="sd">    - search_string: The string to search for</span>
+<span class="sd">    Returns:</span>
+<span class="sd">    - latest_file: The file with the largest value after the search string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get all files in the directory</span>
+    <span class="n">all_files</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
+
+    <span class="c1"># Filter files starting with &quot;Conf_&quot;</span>
+    <span class="n">search_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">all_files</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">search_string</span><span class="p">)]</span>
+
+    <span class="c1"># If no such files are found, return None</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">search_files</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No files found in </span><span class="si">{</span><span class="n">directory</span><span class="si">}</span><span class="s2"> starting with </span><span class="si">{</span><span class="n">search_string</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># Extract values from filenames and get the file with the largest value</span>
+    <span class="n">latest_file</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">search_files</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]))</span>
+
+    <span class="k">return</span> <span class="n">latest_file</span></div>
+
+
+
+<div class="viewcode-block" id="generate_lin_log_timesteps">
+<a class="viewcode-back" href="../../../beadspring.utils.html#beadspring.utils.file_utils.generate_lin_log_timesteps">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_lin_log_timesteps</span><span class="p">(</span><span class="n">start_lin_log_power</span><span class="p">,</span> <span class="n">final_step</span><span class="p">,</span> <span class="n">save_file</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a sequence of linearly and logarithmically spaced timesteps for LAMMPS simulations.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    - start_lin_log_power (int): The starting power of 10 after which the logarithmnic spacing starts over.</span>
+<span class="sd">    - final_step (int): The final simulation step.</span>
+<span class="sd">    - save_file (bool): Whether to save the generated timesteps to a text file.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - np.ndarray: An array of timesteps with logarithmic spacing (as in LAMMPS).</span>
+<span class="sd">    - np.ndarray: An array of special timesteps with a combination of linear and logarithmic spacing.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">    &gt;&gt;&gt; generate_lin_log_timesteps(7, 5*10**8, save_file=True)</span>
+<span class="sd">    Creates a logarithmically spaced time steps upto 10^7 and</span>
+<span class="sd">    then starts over from 10^7+1 upto 5*10^8 restarting the log</span>
+<span class="sd">    save every 10^7 steps.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Initial range of powers and base multipliers</span>
+    <span class="n">powers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_lin_log_power</span><span class="p">)</span>
+    <span class="n">multipliers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">)</span>
+
+    <span class="c1"># Generate all combinations of 10**i * j where i ranges from 1 to 8 and j from 1 to 10</span>
+    <span class="n">all_combinations</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="mi">10</span> <span class="o">**</span> <span class="n">powers</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">multipliers</span>
+    <span class="p">)</span>  <span class="c1"># Broadcasting to create a 2D array of combinations</span>
+
+    <span class="c1"># Flatten the array and sort it (flattening turns the 2D array into a 1D array)</span>
+    <span class="n">steps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">all_combinations</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span>
+
+    <span class="c1"># Ensure that the initial steps from 1 to 9 are included</span>
+    <span class="n">initial_steps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="mi">0</span>
+    <span class="n">log_part</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">initial_steps</span><span class="p">,</span> <span class="n">steps</span><span class="p">)))</span>
+    <span class="n">log_part</span> <span class="o">=</span> <span class="n">log_part</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+
+    <span class="c1"># Initialize final steps array</span>
+    <span class="n">linlog_part</span> <span class="o">=</span> <span class="n">log_part</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">max_value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">(</span><span class="n">final_step</span><span class="p">)</span>  <span class="c1"># The last simulation step</span>
+
+    <span class="c1"># Iteratively build the sequence until the max value is reached or exceeded</span>
+    <span class="k">while</span> <span class="n">linlog_part</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">max_value</span><span class="p">:</span>
+        <span class="c1"># Generate the next set of steps by adding the spacing to the last element</span>
+        <span class="n">next_steps</span> <span class="o">=</span> <span class="n">linlog_part</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">log_part</span>
+
+        <span class="c1"># Keep only new steps that are less than or equal to max_value</span>
+        <span class="n">next_steps</span> <span class="o">=</span> <span class="n">next_steps</span><span class="p">[</span><span class="n">next_steps</span> <span class="o">&lt;=</span> <span class="n">max_value</span><span class="p">]</span>
+
+        <span class="c1"># Concatenate with the existing steps and eliminate duplicates</span>
+        <span class="n">linlog_part</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">linlog_part</span><span class="p">,</span> <span class="n">next_steps</span><span class="p">)))</span>
+
+    <span class="c1"># Append max_value+1 to final_steps to prevent LAMMPS errors</span>
+    <span class="n">linlog_part</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">linlog_part</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">(</span><span class="n">max_value</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="c1"># Optionally save the final_steps into a text file if an argument is provided</span>
+    <span class="k">if</span> <span class="n">save_file</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="s2">&quot;timesteps.txt&quot;</span><span class="p">,</span> <span class="n">linlog_part</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">log_part</span><span class="p">,</span> <span class="n">linlog_part</span></div>
+
+
+<div class="viewcode-block" id="convert_data_to_molecule">
+<a class="viewcode-back" href="../../../beadspring.utils.html#beadspring.utils.file_utils.convert_data_to_molecule">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_data_to_molecule</span><span class="p">(</span><span class="n">data_file</span><span class="p">,</span> <span class="n">output_file</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a LAMMPS data file into a molecule file format.</span>
+
+<span class="sd">    The function reads atom and bond data from the input file and writes them</span>
+<span class="sd">    in the molecule format. This is mainly useful when using the fix bond/react </span>
+<span class="sd">    command.</span>
+
+<span class="sd">    The molecule file format follows the LAMMPS specifications:</span>
+<span class="sd">    https://docs.lammps.org/molecule.html</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data_file : str</span>
+<span class="sd">        Name of the input LAMMPS data file.</span>
+<span class="sd">    output_file : str</span>
+<span class="sd">        Name of the output molecule file.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check if the input file exists</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">data_file</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: The file &#39;</span><span class="si">{</span><span class="n">data_file</span><span class="si">}</span><span class="s2">&#39; does not exist.&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="c1"># Read the input file line by line</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">data_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+    <span class="n">atoms</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># List to store atom data</span>
+    <span class="n">bonds</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># List to store bond data</span>
+    <span class="n">reading_atoms</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Flag to track atom section</span>
+    <span class="n">reading_bonds</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Flag to track bond section</span>
+
+    <span class="c1"># Process each line in the file</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;Atoms&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>  <span class="c1"># Start reading atoms</span>
+            <span class="n">reading_atoms</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="s2">&quot;Bonds&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>  <span class="c1"># Start reading bonds</span>
+            <span class="n">reading_atoms</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">reading_bonds</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">reading_atoms</span> <span class="ow">and</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">):</span>
+            <span class="c1"># Extract atom data</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">atom_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">atom_type</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">4</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">5</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">6</span><span class="p">])</span>
+            <span class="n">atoms</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">atom_id</span><span class="p">,</span> <span class="n">atom_type</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">reading_bonds</span> <span class="ow">and</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">):</span>
+            <span class="c1"># Extract bond data</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">bond_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">bond_type</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">atom1</span><span class="p">,</span> <span class="n">atom2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+            <span class="n">bonds</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">bond_id</span><span class="p">,</span> <span class="n">bond_type</span><span class="p">,</span> <span class="n">atom1</span><span class="p">,</span> <span class="n">atom2</span><span class="p">))</span>
+
+    <span class="c1"># Write the output molecule file</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="c1"># Write file header with input filename</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;molecule created from </span><span class="si">{</span><span class="n">data_file</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span><span class="si">}</span><span class="s2"> atoms</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">bonds</span><span class="p">)</span><span class="si">}</span><span class="s2"> bonds</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;0 angles</span><span class="se">\n</span><span class="s2">0 dihedrals</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Write atom types</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Types</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">atom_id</span><span class="p">,</span> <span class="n">atom_type</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">atoms</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">atom_id</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">atom_type</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Write atom coordinates</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Coords</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">atom_id</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">atoms</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">atom_id</span><span class="si">:</span><span class="s2">4d</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s2">12.6f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">y</span><span class="si">:</span><span class="s2">12.6f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">z</span><span class="si">:</span><span class="s2">12.6f</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Write bond information</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Bonds</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">bond_id</span><span class="p">,</span> <span class="n">bond_type</span><span class="p">,</span> <span class="n">atom1</span><span class="p">,</span> <span class="n">atom2</span> <span class="ow">in</span> <span class="n">bonds</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bond_id</span><span class="si">:</span><span class="s2">4d</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">bond_type</span><span class="si">:</span><span class="s2">4d</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">atom1</span><span class="si">:</span><span class="s2">4d</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">atom2</span><span class="si">:</span><span class="s2">4d</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Utku Gurel.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

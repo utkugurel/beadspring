@@ -1,0 +1,444 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>beadspring.analysis.polymer_properties &mdash; Bead Spring Analytics 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Bead Spring Analytics
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">beadspring</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Bead Spring Analytics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">beadspring.analysis.polymer_properties</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for beadspring.analysis.polymer_properties</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Documentation about the beadspring module.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.spatial.distance</span><span class="w"> </span><span class="kn">import</span> <span class="n">cdist</span><span class="p">,</span> <span class="n">pdist</span>
+
+
+<div class="viewcode-block" id="compute_gyration_tensor">
+<a class="viewcode-back" href="../../../beadspring.analysis.html#beadspring.analysis.polymer_properties.compute_gyration_tensor">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_gyration_tensor</span><span class="p">(</span><span class="n">positions</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the gyration tensor for a given set of positions</span>
+<span class="sd">    in a single time frame</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    positions : np.ndarray</span>
+<span class="sd">        (N, 3) shaped array containing the positions of particles</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gyration tensor :  np.ndarray</span>
+<span class="sd">        (3, 3) shaped array of gyration tensor</span>
+
+<span class="sd">    eigenvalues : np.ndarray</span>
+<span class="sd">        array of length 3 sorted in the ascending order</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">diff</span> <span class="o">=</span> <span class="n">positions</span> <span class="o">-</span> <span class="n">positions</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">gyration_tensor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ij,ik-&gt;jk&quot;</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span> <span class="n">diff</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">positions</span><span class="p">)</span>
+    <span class="n">eigenvalues</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">gyration_tensor</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">gyration_tensor</span><span class="p">,</span> <span class="n">eigenvalues</span></div>
+
+
+
+<div class="viewcode-block" id="calculate_asphericity">
+<a class="viewcode-back" href="../../../beadspring.analysis.html#beadspring.analysis.polymer_properties.calculate_asphericity">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_asphericity</span><span class="p">(</span><span class="n">lmin</span><span class="p">,</span> <span class="n">lmid</span><span class="p">,</span> <span class="n">lmax</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lmin, lmid, lmax : float</span>
+<span class="sd">        Eigenvalues of the gyration tensor</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    b : float</span>
+<span class="sd">        Asphericity parameter for polymer chains. b=0</span>
+<span class="sd">        corresponds to a perfect sphere</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">lmax</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">lmin</span> <span class="o">+</span> <span class="n">lmid</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">b</span></div>
+
+
+
+<div class="viewcode-block" id="calculate_acylindricity">
+<a class="viewcode-back" href="../../../beadspring.analysis.html#beadspring.analysis.polymer_properties.calculate_acylindricity">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_acylindricity</span><span class="p">(</span><span class="n">lmin</span><span class="p">,</span> <span class="n">lmid</span><span class="p">,</span> <span class="n">lmax</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lmin, lmid, lmax : float</span>
+<span class="sd">        Eigenvalues of the gyration tensor</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    c : float</span>
+<span class="sd">        Acylindricity parameter for polymer chains. c=0</span>
+<span class="sd">        corresponds to a perfect cylinder.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">lmid</span> <span class="o">-</span> <span class="n">lmin</span>
+    <span class="k">return</span> <span class="n">c</span></div>
+
+
+
+<div class="viewcode-block" id="calculate_rg2">
+<a class="viewcode-back" href="../../../beadspring.analysis.html#beadspring.analysis.polymer_properties.calculate_rg2">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_rg2</span><span class="p">(</span><span class="n">lmin</span><span class="p">,</span> <span class="n">lmid</span><span class="p">,</span> <span class="n">lmax</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lmin, lmid, lmax : float</span>
+<span class="sd">        Eigenvalues of the gyration tensor</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    rg2 : float</span>
+<span class="sd">        Radius of gyration squared for polymer chains.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">rg2</span> <span class="o">=</span> <span class="n">lmin</span> <span class="o">+</span> <span class="n">lmid</span> <span class="o">+</span> <span class="n">lmax</span>
+    <span class="k">return</span> <span class="n">rg2</span></div>
+
+
+
+<div class="viewcode-block" id="calculate_hydrodynamic_radius">
+<a class="viewcode-back" href="../../../beadspring.analysis.html#beadspring.analysis.polymer_properties.calculate_hydrodynamic_radius">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_hydrodynamic_radius</span><span class="p">(</span><span class="n">positions</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    positions : np.ndarray</span>
+<span class="sd">        (N, 3) shaped array containing the positions of particles</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    hydrodynamic_radius : float</span>
+<span class="sd">        Hydrodynamic radius of the polymer chain</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pdist</span><span class="p">(</span><span class="n">positions</span><span class="p">))</span>
+    <span class="n">inv_dist</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">pdist</span><span class="p">(</span><span class="n">positions</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">hydrodynamic_radius</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">inv_dist</span> <span class="o">/</span> <span class="n">N</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">hydrodynamic_radius</span></div>
+
+
+
+<div class="viewcode-block" id="calculate_shape_anisotropy">
+<a class="viewcode-back" href="../../../beadspring.analysis.html#beadspring.analysis.polymer_properties.calculate_shape_anisotropy">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_shape_anisotropy</span><span class="p">(</span><span class="n">lmin</span><span class="p">,</span> <span class="n">lmid</span><span class="p">,</span> <span class="n">lmax</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lmin, lmid, lmax : float</span>
+<span class="sd">        Eigenvalues of the gyration tensor</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    k2 : float</span>
+<span class="sd">        Relative shape anisotropy parameter for polymer chains.</span>
+<span class="sd">        k2=1 for an ideal linear chain, k2=0 for highly symmetric</span>
+<span class="sd">        conformations. 0 &lt; k2 &lt; 1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">num</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">calculate_asphericity</span><span class="p">(</span><span class="n">lmin</span><span class="p">,</span> <span class="n">lmid</span><span class="p">,</span> <span class="n">lmax</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="o">+</span> <span class="mf">0.75</span> <span class="o">*</span> <span class="n">calculate_acylindricity</span><span class="p">(</span><span class="n">lmin</span><span class="p">,</span> <span class="n">lmid</span><span class="p">,</span> <span class="n">lmax</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="p">)</span>
+    <span class="n">denum</span> <span class="o">=</span> <span class="n">calculate_rg2</span><span class="p">(</span><span class="n">lmin</span><span class="p">,</span> <span class="n">lmid</span><span class="p">,</span> <span class="n">lmax</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+
+    <span class="n">k2</span> <span class="o">=</span> <span class="n">num</span> <span class="o">/</span> <span class="n">denum</span>
+
+    <span class="k">return</span> <span class="n">k2</span></div>
+
+
+
+<div class="viewcode-block" id="calculate_prolateness">
+<a class="viewcode-back" href="../../../beadspring.analysis.html#beadspring.analysis.polymer_properties.calculate_prolateness">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_prolateness</span><span class="p">(</span><span class="n">lmin</span><span class="p">,</span> <span class="n">lmid</span><span class="p">,</span> <span class="n">lmax</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lmin, lmid, lmax : float</span>
+<span class="sd">        Eigenvalues of the gyration tensor</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    p : float</span>
+<span class="sd">        p=-1 for perfectly oblate shape and p=1 for perfectly prolate shape</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n1</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">lmin</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">lmid</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">lmax</span><span class="p">)</span>
+    <span class="n">n2</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">lmid</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">lmin</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">lmax</span><span class="p">)</span>
+    <span class="n">n3</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">lmax</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">lmin</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">lmid</span><span class="p">)</span>
+
+    <span class="n">d1</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">lmin</span> <span class="o">+</span> <span class="n">lmid</span> <span class="o">+</span> <span class="n">lmax</span><span class="p">)</span>
+    <span class="n">d2</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">lmin</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">lmid</span><span class="p">)</span>
+    <span class="n">d3</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">lmid</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">lmax</span><span class="p">)</span>
+    <span class="n">d4</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">lmin</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">lmax</span><span class="p">)</span>
+
+    <span class="n">p</span> <span class="o">=</span> <span class="p">(</span><span class="n">n1</span> <span class="o">*</span> <span class="n">n2</span> <span class="o">*</span> <span class="n">n3</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">d1</span> <span class="o">-</span> <span class="n">d2</span> <span class="o">-</span> <span class="n">d3</span> <span class="o">-</span> <span class="n">d4</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">p</span></div>
+
+
+
+<div class="viewcode-block" id="identify_end_to_end_vector">
+<a class="viewcode-back" href="../../../beadspring.analysis.html#beadspring.analysis.polymer_properties.identify_end_to_end_vector">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">identify_end_to_end_vector</span><span class="p">(</span><span class="n">atom_groups_list</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    atoms_group_list : list</span>
+<span class="sd">        List of &lt;AtomGroup&gt; objects. It can be all backbones in a given system,</span>
+<span class="sd">        or all chains over which we want to compute the end to end vector</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    end_to_end_vector : np.ndarray</span>
+<span class="sd">        (N, 3) shaped array containing the end-to-end vector for each polymer chain</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">end_to_end_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">elem</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">elem</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">atom_groups_list</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">end_to_end_vector</span></div>
+
+
+
+<div class="viewcode-block" id="calculate_end_to_end_correlation">
+<a class="viewcode-back" href="../../../beadspring.analysis.html#beadspring.analysis.polymer_properties.calculate_end_to_end_correlation">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_end_to_end_correlation</span><span class="p">(</span><span class="n">end_to_end_vector</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function computes the auto correlation of the end to end vector</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Ree : np.ndarray</span>
+<span class="sd">        end to end distance vector with shape (len(frames), N_chains, 3)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    correlations :  np.ndarray</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">correlation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">end_to_end_vector</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">end_to_end_vector</span><span class="p">)):</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">end_to_end_vector</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>
+            <span class="n">tmp</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span>
+                <span class="n">end_to_end_vector</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">j</span><span class="p">],</span> <span class="n">end_to_end_vector</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+            <span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="n">end_to_end_vector</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">j</span><span class="p">],</span> <span class="n">end_to_end_vector</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
+        <span class="n">correlation</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">end_to_end_vector</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">correlation</span></div>
+
+
+
+<div class="viewcode-block" id="calculate_end_to_end_correlation_optimised">
+<a class="viewcode-back" href="../../../beadspring.analysis.html#beadspring.analysis.polymer_properties.calculate_end_to_end_correlation_optimised">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_end_to_end_correlation_optimised</span><span class="p">(</span><span class="n">end_to_end_vector</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Optimized function to compute the auto correlation of the end to end vector using NumPy vectorisation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    end_to_end_vector : np.ndarray</span>
+<span class="sd">        End to end distance vector with shape (len(frames), N_chains, 3)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    correlations : np.ndarray</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Pre-compute the lengths and the denominator for each chain</span>
+    <span class="n">num_frames</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">end_to_end_vector</span><span class="p">)</span>
+    <span class="n">num_chains</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">end_to_end_vector</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># Compute the denominator for the correlation calculation (normalization factor for each chain)</span>
+    <span class="n">denominator</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="n">end_to_end_vector</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">j</span><span class="p">],</span> <span class="n">end_to_end_vector</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_chains</span><span class="p">)</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Initialize the correlation array</span>
+    <span class="n">correlation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_frames</span><span class="p">)</span>
+
+    <span class="c1"># Compute correlation using vectorized operations</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_frames</span><span class="p">):</span>
+        <span class="c1"># Vectorized computation of inner products for the current frame with the first frame</span>
+        <span class="n">inner_products</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="n">end_to_end_vector</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">j</span><span class="p">],</span> <span class="n">end_to_end_vector</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_chains</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Compute the correlation for the current frame</span>
+        <span class="n">correlation</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">inner_products</span> <span class="o">/</span> <span class="n">denominator</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">correlation</span></div>
+
+
+
+<div class="viewcode-block" id="compute_bond_lengths">
+<a class="viewcode-back" href="../../../beadspring.analysis.html#beadspring.analysis.polymer_properties.compute_bond_lengths">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_bond_lengths</span><span class="p">(</span><span class="n">atom_group</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    atom_group : &lt;AtomGroup&gt; object</span>
+<span class="sd">        AtomGroup object containing the bond information</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bond_length : np.ndarray</span>
+<span class="sd">        Array containing the bond lengths for all bonds in the system</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">atom1_positions</span> <span class="o">=</span> <span class="n">atom_group</span><span class="o">.</span><span class="n">bonds</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">positions</span>
+    <span class="n">atom2_positions</span> <span class="o">=</span> <span class="n">atom_group</span><span class="o">.</span><span class="n">bonds</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">positions</span>
+    <span class="n">bond_vectors</span> <span class="o">=</span> <span class="n">atom2_positions</span> <span class="o">-</span> <span class="n">atom1_positions</span>
+    <span class="n">bond_length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">bond_vectors</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">bond_length</span></div>
+
+
+
+<div class="viewcode-block" id="compute_p2_from_vectors">
+<a class="viewcode-back" href="../../../beadspring.analysis.html#beadspring.analysis.polymer_properties.compute_p2_from_vectors">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_p2_from_vectors</span><span class="p">(</span><span class="n">bond_vectors</span><span class="p">,</span> <span class="n">reference_axis</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the P2 parameter for a polymer chain from bond vectors.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        bond_vectors (numpy.ndarray): Array of bond vectors (N, 3).</span>
+<span class="sd">        reference_axis (numpy.ndarray): The reference direction vector (default is x-axis).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float: The P2 parameter of the bonds.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Normalize the reference axis</span>
+    <span class="n">reference_axis</span> <span class="o">=</span> <span class="n">reference_axis</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">reference_axis</span><span class="p">)</span>
+
+    <span class="c1"># Normalize bond vectors</span>
+    <span class="n">bond_vectors</span> <span class="o">=</span> <span class="n">bond_vectors</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">bond_vectors</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+
+    <span class="c1"># Compute cosine of angles between bond vectors and the reference axis</span>
+    <span class="n">cos_theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">bond_vectors</span><span class="p">,</span> <span class="n">reference_axis</span><span class="p">)</span>
+
+    <span class="c1"># Compute P2 values for each bond</span>
+    <span class="n">p2_values</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">cos_theta</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Compute the average P2 value</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">p2_values</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="compute_p2">
+<a class="viewcode-back" href="../../../beadspring.analysis.html#beadspring.analysis.polymer_properties.compute_p2">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_p2</span><span class="p">(</span><span class="n">universe</span><span class="p">,</span> <span class="n">reference_axis</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the P2 parameter for a polymer chain using bond orientations from an MDAnalysis Universe.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        universe (MDAnalysis.Universe): The MDAnalysis Universe containing the polymer chain.</span>
+<span class="sd">        reference_axis (numpy.ndarray): The reference direction vector (default is x-axis).</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        float: The P2 parameter of the bonds.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get the positions of the two atoms in the bond</span>
+    <span class="n">pos1</span> <span class="o">=</span> <span class="n">universe</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">bonds</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">positions</span>
+    <span class="n">pos2</span> <span class="o">=</span> <span class="n">universe</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">bonds</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">positions</span>
+
+    <span class="c1"># Compute bond vectors</span>
+    <span class="n">bond_vectors</span> <span class="o">=</span> <span class="n">pos2</span> <span class="o">-</span> <span class="n">pos1</span>
+
+    <span class="c1"># Delegate P2 computation to the helper function</span>
+    <span class="k">return</span> <span class="n">compute_p2_from_vectors</span><span class="p">(</span><span class="n">bond_vectors</span><span class="p">,</span> <span class="n">reference_axis</span><span class="o">=</span><span class="n">reference_axis</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Utku Gurel.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
