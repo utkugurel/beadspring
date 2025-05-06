@@ -9,22 +9,27 @@ on:
       - main
 
 jobs:
-  deploy:
+  build-docs:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v3
         with:
-          python-version: '3.x'
+          auto-update-conda: true
+          activate-environment: beadspring-docs
+          environment-file: environment.yml
+          python-version: 3.11
 
-      - name: Install dependencies
+      - name: Check environment
         run: |
-          python -m pip install --upgrade pip
-          pip install sphinx sphinx_rtd_theme
+          conda info
+          conda list
 
-      - name: Build docs
+      - name: Build documentation
+        shell: bash -l {0}
         working-directory: docs
         run: make html
 
