@@ -18,9 +18,9 @@ jobs:
       - name: Set up Miniconda
         uses: conda-incubator/setup-miniconda@v2
         with:
+          auto-activate-base: false
           environment-file: environment.yml
           activate-environment: bsa
-          auto-activate-base: false
 
       - name: Install dependencies and build docs
         run:
