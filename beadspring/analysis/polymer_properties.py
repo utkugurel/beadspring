@@ -194,7 +194,7 @@ def calculate_end_to_end_correlation(end_to_end_vector):
 
 def calculate_end_to_end_correlation_optimised(end_to_end_vector):
     """
-    Optimized function to compute the auto correlation of the end to end vector using NumPy vectorization.
+    Optimized function to compute the auto correlation of the end to end vector using NumPy vectorisation.
 
     Parameters
     ----------
