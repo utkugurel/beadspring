@@ -9,33 +9,27 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Set up Miniconda
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          auto-activate-base: false
-          environment-file: environment.yml
-          activate-environment: bsa
+          python-version: '3.x'
 
-      - name: Install dependencies and build docs
-        run:
-          pip install sphinx sphinx_rtd_theme sphinx-autodoc-typehints
-      
-      - name: Install package in editable mode
-        shell: bash -l {0}
+      - name: Install dependencies
         run: |
-          pip install -e .
-          cd docs
-          make clean html
+          python -m pip install --upgrade pip
+          pip install sphinx sphinx_rtd_theme
+
+      - name: Build docs
+        working-directory: docs
+        run: make html
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs/_build/html
-          allow_empty_commit: true
+          publish_dir: ./docs/build/html
