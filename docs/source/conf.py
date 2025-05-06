@@ -12,13 +12,18 @@ sys.path.insert(0, os.path.abspath('../beadspring/'))
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'Bead Spring Analytics'
-copyright = '2024, Utku Gurel'
+copyright = '2025, Utku Gurel'
 author = 'Utku Gurel'
+release = '0.1.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode']
+extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.napoleon',
+]
 
 templates_path = ['_templates']
 exclude_patterns = []
