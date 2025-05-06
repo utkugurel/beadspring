@@ -19,7 +19,7 @@ jobs:
         uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
-          activate-environment: beadspring-docs
+          activate-environment: bsa
           environment-file: environment.yml
           python-version: 3.11
 
