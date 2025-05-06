@@ -18,22 +18,20 @@ jobs:
       - name: Set up Miniconda
         uses: conda-incubator/setup-miniconda@v2
         with:
-          auto-activate-base: false
           environment-file: environment.yml
           activate-environment: bsa
+          auto-activate-base: false
 
-      - name: Install dependencies
+      - name: Install dependencies and build docs
         run:
           pip install sphinx sphinx_rtd_theme sphinx-autodoc-typehints
       
       - name: Install package in editable mode
-        run: pip install -e .
-
-      - name: Build docs
-        working-directory: docs
-        run: | 
-          make clean
-          make html
+        shell: bash -l {0}
+        run: |
+          pip install -e .
+          cd docs
+          make clean html
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
