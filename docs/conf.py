@@ -25,6 +25,22 @@ extensions = [
     'sphinx.ext.napoleon',
 ]
 
+autodoc_mock_imports = [
+    'dask',
+    'freud',
+    'ipython',
+    'matplotlib',
+    'mdanalysis',
+    'numpy',
+    'ovito',
+    'pandas',
+    'scikit-learn',
+    'scipy',
+    'signac',
+    'signac-flow',
+    'numba',
+]
+
 templates_path = ['_templates']
 exclude_patterns = []
 
@@ -36,4 +52,4 @@ exclude_patterns = []
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'alabaster'
-html_static_path = ['']
+html_static_path = []
