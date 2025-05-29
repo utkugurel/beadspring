@@ -89,6 +89,79 @@ def wrap_coordinates(positions, box):
     wrapped_coordinates = box.wrap(unwrapped_coordinates)
     return wrapped_coordinates
 
+def select_atoms_by_types(universe, atom_type_list, updating_atom_group=False):
+    """
+    Select atoms from an MDAnalysis Universe based on a list of atom types.
+
+    This function constructs a selection string using the provided atom types
+    and returns the matching atoms as an AtomGroup.
+
+    Parameters
+    ----------
+    universe : MDAnalysis.Universe
+        The MDAnalysis Universe object from which atoms are to be selected.
+    atom_type_list : list of str or int
+        A list of atom types to include in the selection. Each type is inserted
+        into a selection string of the form: 'type X or type Y or ...'.
+    updating_atom_group : bool, optional
+        If True, the returned AtomGroup will update dynamically with the Universe
+        during trajectory iteration. Default is False.
+
+    Returns
+    -------
+    MDAnalysis.core.groups.AtomGroup
+        An AtomGroup containing the selected atoms.
+
+    Raises
+    ------
+    ValueError
+        If atom_type_list is empty or not a list.
+        If universe does not have a 'select_atoms' method.
+    RuntimeError
+        If the selection query fails.
+
+    Example
+    -------
+    >>> import MDAnalysis as mda
+    >>> u = mda.Universe("topology.data", "traj.lammpstrj", format='LAMMPSDUMP')
+    >>> atom_types = [1, 2, 3]
+    >>> selected_atoms = mda_select_atoms_by_types(u, atom_types)
+    >>> print(selected_atoms)
+
+    Notes
+    -----
+    For more information on MDAnalysis selection syntax, see:
+    https://userguide.mdanalysis.org/stable/selections.html#
+
+    """
+
+    if not hasattr(universe, 'select_atoms'):
+        raise ValueError("The provided 'universe' does not appear to be a valid MDAnalysis Universe.")
+
+    if not isinstance(atom_type_list, list):
+        raise ValueError("atom_type_list must be a list of atom types (strings or integers).")
+
+    if not atom_type_list:
+        raise ValueError("atom_type_list cannot be empty.")
+
+    # Build the selection query
+    try:
+        selection_query = ' or '.join(f'type {atom_type}' for atom_type in atom_type_list)
+    except Exception as e:
+        raise ValueError(f"Error while building selection query: {e}")
+
+    print(f'Total selection query: {selection_query}')
+
+    # Perform the selection
+    try:
+        selection = universe.select_atoms(selection_query, updating=updating_atom_group)
+        
+        print(f"Selection successful: {len(selection)} atoms selected.")
+        
+    except Exception as e:
+        raise RuntimeError(f"Error selecting atoms with query '{selection_query}': {e}")
+
+    return selection
 
 def find_latest_file(directory, search_string):
     """
