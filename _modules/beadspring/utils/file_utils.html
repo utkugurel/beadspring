@@ -169,6 +169,82 @@
     <span class="k">return</span> <span class="n">wrapped_coordinates</span></div>
 
 
+<div class="viewcode-block" id="select_atoms_by_types">
+<a class="viewcode-back" href="../../../beadspring.utils.html#beadspring.utils.file_utils.select_atoms_by_types">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">select_atoms_by_types</span><span class="p">(</span><span class="n">universe</span><span class="p">,</span> <span class="n">atom_type_list</span><span class="p">,</span> <span class="n">updating_atom_group</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Select atoms from an MDAnalysis Universe based on a list of atom types.</span>
+
+<span class="sd">    This function constructs a selection string using the provided atom types</span>
+<span class="sd">    and returns the matching atoms as an AtomGroup.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    universe : MDAnalysis.Universe</span>
+<span class="sd">        The MDAnalysis Universe object from which atoms are to be selected.</span>
+<span class="sd">    atom_type_list : list of str or int</span>
+<span class="sd">        A list of atom types to include in the selection. Each type is inserted</span>
+<span class="sd">        into a selection string of the form: &#39;type X or type Y or ...&#39;.</span>
+<span class="sd">    updating_atom_group : bool, optional</span>
+<span class="sd">        If True, the returned AtomGroup will update dynamically with the Universe</span>
+<span class="sd">        during trajectory iteration. Default is False.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    MDAnalysis.core.groups.AtomGroup</span>
+<span class="sd">        An AtomGroup containing the selected atoms.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If atom_type_list is empty or not a list.</span>
+<span class="sd">        If universe does not have a &#39;select_atoms&#39; method.</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        If the selection query fails.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; import MDAnalysis as mda</span>
+<span class="sd">    &gt;&gt;&gt; u = mda.Universe(&quot;topology.data&quot;, &quot;traj.lammpstrj&quot;, format=&#39;LAMMPSDUMP&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; atom_types = [1, 2, 3]</span>
+<span class="sd">    &gt;&gt;&gt; selected_atoms = mda_select_atoms_by_types(u, atom_types)</span>
+<span class="sd">    &gt;&gt;&gt; print(selected_atoms)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For more information on MDAnalysis selection syntax, see:</span>
+<span class="sd">    https://userguide.mdanalysis.org/stable/selections.html#</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">universe</span><span class="p">,</span> <span class="s1">&#39;select_atoms&#39;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The provided &#39;universe&#39; does not appear to be a valid MDAnalysis Universe.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">atom_type_list</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;atom_type_list must be a list of atom types (strings or integers).&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">atom_type_list</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;atom_type_list cannot be empty.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Build the selection query</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">selection_query</span> <span class="o">=</span> <span class="s1">&#39; or &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;type </span><span class="si">{</span><span class="n">atom_type</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">atom_type</span> <span class="ow">in</span> <span class="n">atom_type_list</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error while building selection query: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Total selection query: </span><span class="si">{</span><span class="n">selection_query</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Perform the selection</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">selection</span> <span class="o">=</span> <span class="n">universe</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="n">selection_query</span><span class="p">,</span> <span class="n">updating</span><span class="o">=</span><span class="n">updating_atom_group</span><span class="p">)</span>
+        
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selection successful: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">selection</span><span class="p">)</span><span class="si">}</span><span class="s2"> atoms selected.&quot;</span><span class="p">)</span>
+        
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error selecting atoms with query &#39;</span><span class="si">{</span><span class="n">selection_query</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">selection</span></div>
+
 
 <div class="viewcode-block" id="find_latest_file">
 <a class="viewcode-back" href="../../../beadspring.utils.html#beadspring.utils.file_utils.find_latest_file">[docs]</a>
