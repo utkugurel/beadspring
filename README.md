@@ -131,5 +131,8 @@ If you use Bead-Spring Analytics in your work, please cite it using the informat
 
 For more information, contact the package maintainers or create an issue.
 
+## Contributing
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on developing and testing.
+
 ## References
 <a id="1">[1]</a> Kremer, K.; Grest, G. S. Dynamics of entangled linear polymer melts: A molecular-dynamics simulation. The Journal of Chemical Physics 1990, 92, 5057–5086.
