@@ -117,6 +117,9 @@ if __name__ == '__main__':
 - It is wise to call different functions within the same loop (whenever possible) to optimise the runtime.
 - We use `Numpy` based operations to optimise the speed in almost all cases. If a specific function creates a bottleneck in the runtime, you can accelerate it with `@njit` decorator form `Numba`.
 
+## Citation
+If you use Bead-Spring Analytics in your work, please cite it using the information provided in [CITATION.cff](CITATION.cff).
+
 ## Additional Resources
 - [LAMMPS Documentation](https://docs.lammps.org/Manual.html)
 - [NumPy](https://numpy.org/)
