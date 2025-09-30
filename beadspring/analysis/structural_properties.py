@@ -1,10 +1,32 @@
-import freud
+from __future__ import annotations
+
 import numpy as np
-from MDAnalysis.analysis.rdf import InterRDF
-from MDAnalysis.analysis import contacts
-from MDAnalysis.analysis import lineardensity
-from scipy.spatial import ConvexHull
 from numpy.fft import fftn, fftshift
+from scipy.spatial import ConvexHull
+
+try:  # pragma: no cover - optional dependency
+    import freud  # type: ignore
+except ImportError:  # pragma: no cover - optional dependency
+    freud = None
+
+try:  # pragma: no cover - optional dependency
+    from MDAnalysis.analysis import contacts, lineardensity  # type: ignore
+    from MDAnalysis.analysis.rdf import InterRDF  # type: ignore
+except ImportError:  # pragma: no cover - optional dependency
+    contacts = None
+    lineardensity = None
+    InterRDF = None
+
+__all__ = [
+    "compute_rdf",
+    "compute_rdf_pair_mda",
+    "compute_rdf_pair_freud",
+    "compute_structure_factor_fourier",
+    "compute_structure_factor_freud",
+    "contacts_within_cutoff",
+    "bounding_sphere",
+    "compute_linear_density",
+]
 
 
 def compute_rdf(positions, box, r_max=6.0, bins=50):
@@ -30,6 +52,9 @@ def compute_rdf(positions, box, r_max=6.0, bins=50):
     r_min : float
         value of r for which g(r) attains its minimum
     """
+    if freud is None:  # pragma: no cover - optional dependency
+        raise ImportError("freud is required to compute the RDF.")
+
     system = (box, box.wrap(positions))
     rdf = freud.density.RDF(bins=bins, r_max=r_max)
     rdf.compute(system)
@@ -72,6 +97,9 @@ def compute_rdf_pair_mda(ag1, ag2, r_max=6.0, nbins=75):
         value of r for which g(r) attains its minimum
     """
 
+    if InterRDF is None:  # pragma: no cover - optional dependency
+        raise ImportError("MDAnalysis must be installed to compute the RDF via MDAnalysis.")
+
     rdf_pair = InterRDF(ag1, ag2, range=(0, r_max), nbins=nbins)
     rdf_pair.run()
 
@@ -113,6 +141,9 @@ def compute_rdf_pair_freud(type1_positions, type2_positions, box, r_max=6.0, nbi
         radial distribution function
 
     """
+    if freud is None:  # pragma: no cover - optional dependency
+        raise ImportError("freud is required to compute the RDF using freud.")
+
     # Wrap the positions within the box
     type1_wrapped = box.wrap(type1_positions)
     type2_wrapped = box.wrap(type2_positions)
@@ -297,6 +328,9 @@ def compute_structure_factor_freud(positions, box, bins=100, kmax=8.0, kmin=0.1)
 
     """
 
+    if freud is None:  # pragma: no cover - optional dependency
+        raise ImportError("freud is required to compute the static structure factor.")
+
     wrapped_positions = box.wrap(positions)
     sf = freud.diffraction.StaticStructureFactorDirect(
         bins=bins, k_max=kmax, k_min=kmin
@@ -327,6 +361,9 @@ def contacts_within_cutoff(type1_positions, type2_positions, box, radius=2.5):
     n_contacts : int
         Number of contacts between the two groups of particles
     """
+
+    if contacts is None:  # pragma: no cover - optional dependency
+        raise ImportError("MDAnalysis contacts module is required for this function.")
 
     type1_wrapped = box.wrap(type1_positions)
     type2_wrapped = box.wrap(type2_positions)
@@ -392,6 +429,9 @@ def compute_linear_density(atomgroup, trajectory_slice, axis = 'y', binsize = 1.
     max_box_size = max(atomgroup.universe.dimensions[:3])
     # num of columns is always equal to largest_dimension/binsize
     num_bins = int(max_box_size / binsize)
+
+    if lineardensity is None:  # pragma: no cover - optional dependency
+        raise ImportError("MDAnalysis lineardensity module is required for this function.")
 
     density_analyzer = lineardensity.LinearDensity(atomgroup, binsize=binsize)
     density_array = np.zeros((num_frames, num_bins))

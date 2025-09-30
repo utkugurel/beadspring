@@ -1,7 +1,25 @@
-"""Documentation about the beadspring module."""
+"""Polymer specific structural descriptors used throughout the project."""
+
+from __future__ import annotations
 
 import numpy as np
 from scipy.spatial.distance import cdist, pdist
+
+__all__ = [
+    "compute_gyration_tensor",
+    "calculate_asphericity",
+    "calculate_acylindricity",
+    "calculate_rg2",
+    "calculate_hydrodynamic_radius",
+    "calculate_shape_anisotropy",
+    "calculate_prolateness",
+    "identify_end_to_end_vector",
+    "calculate_end_to_end_correlation",
+    "calculate_end_to_end_correlation_optimised",
+    "compute_bond_lengths",
+    "compute_p2_from_vectors",
+    "compute_p2",
+]
 
 
 def compute_gyration_tensor(positions):
