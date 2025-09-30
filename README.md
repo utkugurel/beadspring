@@ -18,9 +18,15 @@ Bead-Spring Analytics is a Python package for analysing coarse-grained molecular
 
 Ensure you have: Python 3.11+
 
-Required Python libraries: NumPy, MDAnalysis, Freud, scipy, 
+Required Python libraries: NumPy, MDAnalysis, Freud, SciPy.
 
-The `environment.yml` fiel contains more packages that are useful and will be needed if you are part of our research group. We keep them as requirements for convenience.
+The `environment.yml` file contains more packages that are useful and will be needed if you are part of our research group. We keep them as requirements for convenience.
+
+For a light-weight setup outside of Conda you can install the core dependencies with
+
+```bash
+pip install -r requirements.txt
+```
 
 
 

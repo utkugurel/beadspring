@@ -1,20 +1,24 @@
-"""Utility functions for testing"""
+"""Utility helpers shared across the test suite."""
+
+from pathlib import Path
 
 import freud
 import MDAnalysis as mda
-import numpy as np
-from pyprojroot.here import here
+
+
+DATA_DIR = Path(__file__).resolve().parent / "data"
 
 
 def setup_universe():
-    """Set up mdanalysis universe before testing"""
-    topology_file = here("tests/data/topo.data")
-    trajectory_file = here("tests/data/traj.dat")
-    u = mda.Universe(topology_file, trajectory_file, format="LAMMPSDUMP", dt=0.005)
-    return u
+    """Return an :class:`MDAnalysis.Universe` configured for the test data."""
+
+    topology_file = DATA_DIR / "topo.data"
+    trajectory_file = DATA_DIR / "traj.dat"
+    return mda.Universe(topology_file, trajectory_file, format="LAMMPSDUMP", dt=0.005)
 
 
 def setup_freud():
+    """Construct a cubic :class:`freud.box.Box` based on the test universe."""
+
     universe = setup_universe()
-    box = freud.Box.cube(universe.dimensions[0])
-    return box
+    return freud.Box.cube(universe.dimensions[0])

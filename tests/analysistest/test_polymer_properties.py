@@ -1,14 +1,12 @@
-"""Tests for the beadspring.analysis.polymer_properties module."""
+"""Tests for the :mod:`beadspring.analysis.polymer_properties` module."""
 
-import MDAnalysis as mda
 import numpy as np
 import numpy.testing as npt
 import pytest
-from pyprojroot.here import here
 from unittest.mock import MagicMock
 
 
-from tests.testing_utils import setup_universe
+from ..testing_utils import setup_universe
 
 universe = setup_universe()
 

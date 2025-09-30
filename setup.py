@@ -10,7 +10,15 @@ setup(
     long_description_content_type='text/markdown',  # Content type for the long description, e.g., markdown or reStructuredText
     url='https://github.com/utkugurel/bead-spring',  # URL to the repository or package homepage
     packages=find_packages(),  # Automatically find and include all packages
-
+    install_requires=[
+        'MDAnalysis>=2.6.1',
+        'freud-analysis>=2.13.2',
+        'numpy>=1.26',
+        'scipy>=1.12',
+    ],
+    extras_require={
+        'dev': ['pytest>=8.0'],
+    },
     classifiers=[
         'Development Status :: 3 - Alpha',  # Choose the appropriate status
         'Intended Audience :: Developers',

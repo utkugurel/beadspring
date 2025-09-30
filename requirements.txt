@@ -1,0 +1,4 @@
+MDAnalysis==2.6.1
+freud-analysis==2.13.2
+numpy==1.26.3
+scipy==1.12.0
