@@ -1,7 +1,12 @@
+"""Generate simple molecular architectures for bead-spring models."""
+
+from __future__ import annotations
+
 import math
-import sys
 
 import numpy as np
+
+__all__ = ["create_ring", "create_polymer_matrix"]
 
 
 def create_ring(num_beads, file_name="ring.data"):
