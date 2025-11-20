@@ -1,33 +1,44 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "beadspring"
 version = "0.2.0"
 description = "Analysis utilities for bead-spring polymer simulations"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 authors = [{name = "Utku Gürel"}]
 license = {file = "LICENSE.txt"}
 dependencies = [
-    "numpy>=1.23",
-    "scipy>=1.9",
+    "numpy==1.26.3",
+    "scipy==1.12.0",
+    "MDAnalysis==2.6.1",
+    "freud-analysis==2.13.2",
+    "numba==0.59.0",
 ]
 
 [project.optional-dependencies]
 docs = ["sphinx>=7.0"]
 dev = [
-    "pytest>=7.4",
+    "pytest==8.0.0",
     "pytest-cov>=4.1",
+    "ruff>=0.1.0",
+    "ipython==8.20.0",
 ]
 analysis = [
-    "MDAnalysis>=2.5",
-    "freud-analysis>=2.12",
+    "matplotlib==3.8.2",
+    "pandas==2.2.0",
+    "scikit-learn==1.4.0",
+    "dask==2023.11.0",
+    "signac==2.1.0",
+    "signac-flow==0.26.1",
+    "pyprojroot==0.3.0",
 ]
 
 [project.urls]
 Homepage = "https://github.com/utkugurel/bead-spring"
 
-[tool.setuptools.packages.find]
-include = ["beadspring*"]
+[tool.hatch.build.targets.wheel]
+packages = ["beadspring"]
+

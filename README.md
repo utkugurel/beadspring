@@ -6,7 +6,7 @@ Created by [Utku Gürel](https://github.com/utkugurel)
 
 
 ## Introduction
-Bead-Spring Analytics is a Python package for analysing coarse-grained molecular dynamics simulations. The name is inspired by the very well known bead-spring model [[1]](#1). It provides tools for computing structural and dynamical properties of polymers using LAMMPS-generated trajectory data. It is also capable of generating some coarse-grained polymer architectures that are used in these simulations. It heavily relies on other python packages and does not claim to be complete. We employ functional programming, so we avoid writing classes. Feel free to include your own functions keeping this desing choice in mind. The documentation lives [here](https://utkugurel.github.io/beadspring/beadspring.html).
+Bead-Spring Analytics is a Python package for analysing coarse-grained molecular dynamics simulations. The name is inspired by the very well known bead-spring model [[1]](#1). It provides tools for structural (gyration tensors, shape anisotropy, hydrodynamic radius, persistence length, etc.) and dynamical (MSD, NGP, Debye-Waller, Rouse modes, etc.) observables using LAMMPS-generated trajectory data. It is also capable of generating some coarse-grained polymer architectures that are used in these simulations. It heavily relies on other python packages and does not claim to be complete. We employ functional programming, so we avoid writing classes. Feel free to include your own functions keeping this desing choice in mind. The documentation lives [here](https://utkugurel.github.io/beadspring/beadspring.html).
 
 [![Powered by MDAnalysis](https://img.shields.io/badge/powered%20by-MDAnalysis-orange.svg?logoWidth=16&logo=data:image/x-icon;base64,AAABAAEAEBAAAAEAIAAoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJD+XwCY/fEAkf3uAJf97wGT/a+HfHaoiIWE7n9/f+6Hh4fvgICAjwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACT/yYAlP//AJ///wCg//8JjvOchXly1oaGhv+Ghob/j4+P/39/f3IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJH8aQCY/8wAkv2kfY+elJ6al/yVlZX7iIiI8H9/f7h/f38UAAAAAAAAAAAAAAAAAAAAAAAAAAB/f38egYF/noqAebF8gYaagnx3oFpUUtZpaWr/WFhY8zo6OmT///8BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgICAn46Ojv+Hh4b/jouJ/4iGhfcAAADnAAAA/wAAAP8AAADIAAAAAwCj/zIAnf2VAJD/PAAAAAAAAAAAAAAAAICAgNGHh4f/gICA/4SEhP+Xl5f/AwMD/wAAAP8AAAD/AAAA/wAAAB8Aov9/ALr//wCS/Z0AAAAAAAAAAAAAAACBgYGOjo6O/4mJif+Pj4//iYmJ/wAAAOAAAAD+AAAA/wAAAP8AAABhAP7+FgCi/38Axf4fAAAAAAAAAAAAAAAAiIiID4GBgYKCgoKogoB+fYSEgZhgYGDZXl5e/m9vb/9ISEjpEBAQxw8AAFQAAAAAAAAANQAAADcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAjo6Mb5iYmP+cnJz/jY2N95CQkO4pKSn/AAAA7gAAAP0AAAD7AAAAhgAAAAEAAAAAAAAAAACL/gsAkv2uAJX/QQAAAAB9fX3egoKC/4CAgP+NjY3/c3Nz+wAAAP8AAAD/AAAA/wAAAPUAAAAcAAAAAAAAAAAAnP4NAJL9rgCR/0YAAAAAfX19w4ODg/98fHz/i4uL/4qKivwAAAD/AAAA/wAAAP8AAAD1AAAAGwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALGxsVyqqqr/mpqa/6mpqf9KSUn/AAAA5QAAAPkAAAD5AAAAhQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADkUFBSuZ2dn/3V1df8uLi7bAAAATgBGfyQAAAA2AAAAMwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB0AAADoAAAA/wAAAP8AAAD/AAAAWgC3/2AAnv3eAJ/+dgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9AAAA/wAAAP8AAAD/AAAA/wAKDzEAnP3WAKn//wCS/OgAf/8MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIQAAANwAAADtAAAA7QAAAMAAABUMAJn9gwCe/e0Aj/2LAP//AQAAAAAAAAAA)](https://www.mdanalysis.org)
 
@@ -20,40 +20,15 @@ Ensure you have: Python 3.11+
 
 Required Python libraries: NumPy, MDAnalysis, Freud, scipy, 
 
-The `environment.yml` fiel contains more packages that are useful and will be needed if you are part of our research group. We keep them as requirements for convenience.
+##### Install dependencies and the package with `uv`
 
-
-
-We suggest the use of virtual environments. Follow the steps below to create the `bsa` environment.
-
-##### Clone to repository
-```bash
-git clone git@github.com:utkugurel/beadspring.git
-```
-##### Install the dependencies in a conda environment and activate `bsa`
+We recommend using [uv](https://github.com/astral-sh/uv) for fast and reliable package management.
 
 ```bash
 cd beadspring/
-conda env create -f environment.yml
-conda activate bsa
-```
-Sometimes the installation takes a long time. In that case, follow these steps:
-First, create the environment with the specified Python version
-
-```bash
-conda create -n bsa python=3.11.6 -c conda-forge
-```
-Then, activate the environment and install the remaining packages
-```bash
-conda activate bsa
-conda env update --name bsa --file environment.yml --prune
-```
-If this also takes a long time, try to install the packages individually.
-
-##### Install `beadspring` into `bsa` environment
-
-```bash
-pip install -e .
+uv venv
+source .venv/bin/activate
+uv pip install -e ".[analysis,dev]"
 ```
 
 ##### Check the installation

@@ -19,6 +19,8 @@ __all__ = [
     "compute_bond_lengths",
     "compute_p2_from_vectors",
     "compute_p2",
+    "calculate_persistence_length",
+    "compute_rouse_modes",
 ]
 
 
@@ -320,3 +322,172 @@ def compute_p2(universe, reference_axis=np.array([1, 0, 0])):
 
     # Delegate P2 computation to the helper function
     return compute_p2_from_vectors(bond_vectors, reference_axis=reference_axis)
+
+
+def calculate_persistence_length(bond_vectors):
+    """
+    Calculate the persistence length of a polymer chain.
+
+    The persistence length is computed by fitting the decay of bond correlations:
+    <cos(theta)> = exp(-s / lp)
+    where s is the contour distance along the chain.
+
+    Parameters
+    ----------
+    bond_vectors : np.ndarray
+        Array of bond vectors with shape (N_bonds, 3) or (N_frames, N_bonds, 3).
+
+    Returns
+    -------
+    lp : float
+        The persistence length in units of bond length.
+    """
+    bond_vectors = np.asarray(bond_vectors)
+    
+    # Handle trajectory data by reshaping or averaging if needed, 
+    # but for now let's assume a single chain or average over frames first.
+    # If input is (N_frames, N_bonds, 3), we average correlations over frames.
+    
+    if bond_vectors.ndim == 3:
+        # (Frames, Bonds, 3)
+        # Normalize vectors
+        norms = np.linalg.norm(bond_vectors, axis=2, keepdims=True)
+        u = bond_vectors / norms
+        
+        n_frames, n_bonds, _ = u.shape
+        correlations = np.zeros(n_bonds)
+        
+        # Compute <u_i . u_{i+s}> averaged over i and frames
+        # This is equivalent to the autocorrelation of the bond vectors along the chain index
+        
+        # We can use a simpler approach: average cos theta for separation s
+        for s in range(n_bonds):
+            # Vectorized dot product for all i: u[:, i, :] . u[:, i+s, :]
+            # We have n_bonds - s pairs
+            if s == 0:
+                correlations[s] = 1.0
+                continue
+                
+            # u[:, :-s, :] and u[:, s:, :]
+            # dot product along last axis (2)
+            dots = np.sum(u[:, :-s, :] * u[:, s:, :], axis=2)
+            correlations[s] = np.mean(dots)
+            
+    elif bond_vectors.ndim == 2:
+        # (Bonds, 3) - Single conformation
+        norms = np.linalg.norm(bond_vectors, axis=1, keepdims=True)
+        u = bond_vectors / norms
+        n_bonds = len(u)
+        correlations = np.zeros(n_bonds)
+        
+        for s in range(n_bonds):
+            if s == 0:
+                correlations[s] = 1.0
+                continue
+            dots = np.sum(u[:-s] * u[s:], axis=1)
+            correlations[s] = np.mean(dots)
+    else:
+        raise ValueError("bond_vectors must be 2D or 3D array.")
+
+    # Fit exponential decay: y = exp(-x/lp) -> ln(y) = -x/lp
+    # We fit only the first part where correlation is positive to avoid log(negative)
+    # and usually only for s where correlation is significant
+    
+    x = np.arange(len(correlations))
+    y = correlations
+    
+    # Filter for valid log values
+    mask = y > 0
+    x_fit = x[mask]
+    y_fit = np.log(y[mask])
+    
+    # Linear fit through origin is not strictly required but standard model is exp(-s/lp)
+    # so slope is -1/lp.
+    # We can use simple least squares for -x/lp
+    
+    # slope = sum(x*y) / sum(x^2) for y = slope * x
+    slope = np.sum(x_fit * y_fit) / np.sum(x_fit**2)
+    
+    lp = -1.0 / slope
+    return lp
+
+
+def compute_rouse_modes(positions, p_modes=None):
+    """
+    Compute the Rouse modes for polymer chains.
+    
+    X_p = sqrt(2/N) * sum_{n=1}^N R_n * cos(p * pi * (n - 0.5) / N)
+    
+    Parameters
+    ----------
+    positions : np.ndarray
+        Array of particle positions with shape (N_frames, N_monomers, 3) or (N_monomers, 3).
+    p_modes : list or int, optional
+        The mode indices 'p' to compute. If None, computes all modes p=0 to N-1.
+        If int, computes modes 0 to p_modes-1.
+        
+    Returns
+    -------
+    modes : np.ndarray
+        The Rouse modes coordinates. 
+        Shape (N_frames, len(p_modes), 3) or (len(p_modes), 3).
+    """
+    positions = np.asarray(positions)
+    
+    if positions.ndim == 2:
+        # (N_monomers, 3)
+        positions = positions[np.newaxis, :, :]
+        single_frame = True
+    else:
+        single_frame = False
+        
+    n_frames, n_monomers, dim = positions.shape
+    
+    if p_modes is None:
+        p_indices = np.arange(n_monomers)
+    elif isinstance(p_modes, int):
+        p_indices = np.arange(p_modes)
+    else:
+        p_indices = np.asarray(p_modes)
+        
+    n_modes = len(p_indices)
+    
+    # Precompute cosine matrix: (N_modes, N_monomers)
+    n = np.arange(1, n_monomers + 1)
+    # cos(p * pi * (n - 0.5) / N)
+    # We need p as column, n as row for broadcasting or dot product
+    # Let's make a matrix M of shape (N_monomers, N_modes) to do pos . M
+    
+    # Argument: p * pi * (n - 0.5) / N
+    # shape (N_monomers, N_modes)
+    args = np.outer(n - 0.5, p_indices) * np.pi / n_monomers
+    cos_matrix = np.cos(args) # (N_monomers, N_modes)
+    
+    # X_p = sqrt(2/N) * sum(R_n * cos(...))
+    # We want to sum over monomers (axis 1 of positions)
+    # positions: (Frames, Monomers, 3)
+    # We can use einsum: f m d, m p -> f p d
+    
+    modes = np.einsum('fmd,mp->fpd', positions, cos_matrix)
+    
+    # Multiply by normalization sqrt(2/N)
+    # Note: Mode 0 is usually defined as center of mass * sqrt(N) or similar, 
+    # The formula sqrt(2/N) is standard for p >= 1. 
+    # For p=0, cos(0) = 1, sum is sum(R_n) = N * R_cm. 
+    # With factor sqrt(2/N), X_0 = sqrt(2/N) * N * R_cm = sqrt(2N) * R_cm.
+    # Sometimes X_0 is defined as sqrt(1/N) * sum(R_n) = sqrt(N) * R_cm.
+    # We will stick to the sqrt(2/N) factor for all modes as requested by "functional form" usually,
+    # but strictly speaking X_0 normalization might differ in literature.
+    # Let's use sqrt(2/N) for all for consistency with the formula provided in docstring.
+    
+    norm_factor = np.sqrt(2.0 / n_monomers)
+    modes *= norm_factor
+    
+    # Special case for p=0 if we want to match standard definition X_0 = sqrt(N) R_cm
+    # The current formula gives X_0 = sqrt(2N) R_cm. 
+    # This is a factor of sqrt(2) difference. 
+    # I will leave it as the raw formula implies unless specified otherwise.
+    
+    if single_frame:
+        return modes[0]
+    return modes
